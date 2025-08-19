@@ -1150,3 +1150,17 @@
 	result = list(/obj/item/clothing/head/roguetown/menacing/bandit)
 	reqs = list(/obj/item/natural/cloth = 3)
 	craftdiff = 1
+
+/datum/crafting_recipe/roguetown/sewing/leash
+	name = "Rope leash (1 rope)"
+	result = list(/obj/item/leash = 1)
+	reqs = list(/obj/item/rope = 1)
+	craftdiff = 0
+	sellprice = 10
+
+/datum/crafting_recipe/roguetown/sewing/leashleather
+	name = "leather leash (1 leather)"
+	result = list(/obj/item/leash/leather)
+	reqs = list(/obj/item/natural/hide/cured = 1)
+	craftdiff = 0
+	sellprice = 10

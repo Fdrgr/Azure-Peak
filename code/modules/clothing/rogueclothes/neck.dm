@@ -656,6 +656,22 @@
 	resistance_flags = FIRE_PROOF
 	dropshrink = 0.5
 
+/obj/item/clothing/neck/roguetown/collar/leather/slave/Initialize(mapload)
+	. = ..()
+	name = "Slave collar"
+	desc = "A well-known collar that is often used by slavers and dubious individuals to gain a sense of power over their slaves."
+	resistance_flags = FIRE_PROOF
+	ADD_TRAIT(src, TRAIT_NODROP, CURSED_ITEM_TRAIT)
+	clothing_flags = ITEM_SLOT_NECK
+	icon_state = "collar"
+	item_state = "collar"
+
+/obj/item/clothing/neck/roguetown/collar/leather/slave/dropped(mob/living/carbon/human/user)
+	. = ..()
+	if(QDELETED(src))
+		return
+	qdel(src)
+
 /obj/item/clothing/neck/roguetown/collar/forlorn
 	name = "light forlorn collar"
 	desc = "A old reminder. A lighter version often used more as a status symbol for slaves. Then and now."

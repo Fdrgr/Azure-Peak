@@ -99,3 +99,8 @@
 	name = "Lady's Belt"
 	cost = 10
 	contains = list(/obj/item/storage/belt/rogue/leather/cloth/lady)
+
+/datum/supply_pack/rogue/bath_clothes/slave_collar
+	name = "Slave Collar"
+	cost = 100
+	contains =  list(/obj/item/clothing/neck/roguetown/collar/leather/slave/Initialize)

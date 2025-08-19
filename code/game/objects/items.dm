@@ -186,6 +186,8 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 
 	var/firefuel = 0 //add this idiot
 
+	var/leashable = FALSE 
+
 	var/thrown_bclass = BCLASS_BLUNT
 
 	var/icon/experimental_inhand = TRUE

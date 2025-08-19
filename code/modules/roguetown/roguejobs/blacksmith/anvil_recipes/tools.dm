@@ -440,3 +440,9 @@
 	req_bar = /obj/item/ingot/iron
 	created_item = /obj/item/reagent_containers/glass/bowl/iron
 	craftdiff = 1
+
+/datum/anvil_recipe/tools/chainleash
+	name = "Chain leash"
+	req_bar = /obj/item/ingot/iron
+	created_item = /obj/item/leash/chain
+	craftdiff = 0

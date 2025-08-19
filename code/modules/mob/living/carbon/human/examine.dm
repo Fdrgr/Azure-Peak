@@ -498,6 +498,9 @@
 			str += "[wear_wrists.integrity_check()]"
 		. += str
 
+	if(has_status_effect(/datum/status_effect/leash_pet))
+		. += "<A href='?src=[REF(src)];'><span class='warning'>[m3] the leash are secured, their end is tied to the collar! </span></A>"
+
 	//handcuffed?
 	if(handcuffed)
 		if(user == src)
@@ -948,3 +951,4 @@
 			return "[verbose ? "Conjured" : "(C. shaft)"]"
 		else
 			return null
+

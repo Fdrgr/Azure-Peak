@@ -180,3 +180,9 @@
 	craftdiff = 3
 	sellprice = 10
 
+/datum/crafting_recipe/roguetown/leather/leatherleash
+	name = "leather leash (1 leather)"
+	result = list(/obj/item/leash/leather)
+	reqs = list(/obj/item/natural/hide/cured = 1)
+	craftdiff = 0
+	sellprice = 10
