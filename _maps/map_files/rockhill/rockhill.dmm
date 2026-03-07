@@ -80379,6 +80379,10 @@
 "uBY" = (
 /turf/open/floor/rogue/ruinedwood/spiral,
 /area/rogue/indoors/shelter/mountains)
+"uCc" = (
+/obj/structure/fluff/wallclock,
+/turf/open/floor/rogue/wood,
+/area/rogue/indoors/town/manor/rockhill)
 "uCf" = (
 /obj/structure/fluff/railing/border{
 	dir = 4
@@ -87056,6 +87060,7 @@
 	pixel_x = 29;
 	pixel_y = 0
 	},
+/obj/structure/fluff/wallclock,
 /turf/open/floor/rogue/wood/herringbone,
 /area/rogue/indoors/town/manor/rockhill)
 "wqY" = (
@@ -377372,7 +377377,7 @@ mwE
 mwE
 udS
 wtF
-oif
+uCc
 xlm
 wye
 sPu
