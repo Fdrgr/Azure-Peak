@@ -28778,7 +28778,9 @@
 	icon_state = "borderfall";
 	pixel_y = 8
 	},
-/obj/machinery/light/rogue/candle,
+/obj/machinery/light/rogue/candle{
+	pixel_x = -1
+	},
 /obj/structure/chair/wood/rogue,
 /obj/structure/fluff/walldeco/church/line{
 	dir = 8
@@ -29277,6 +29279,14 @@
 	pixel_y = 8
 	},
 /obj/machinery/gear_painter,
+/obj/structure/standingbell{
+	name = "servantry service bell";
+	specific_location = "Lord's meeting room";
+	dir = 1;
+	pixel_y = 32;
+	icon = 'icons/roguetown/misc/structure.dmi';
+	icon_state = "bell"
+	},
 /turf/open/floor/rogue/tile,
 /area/rogue/indoors/town/manor/rockhill)
 "hql" = (
@@ -30103,6 +30113,12 @@
 	},
 /obj/item/natural/feather{
 	pixel_y = 12
+	},
+/obj/structure/standingbell{
+	name = "servantry service bell";
+	specific_location = "Lord's Office";
+	icon = 'modular_twilight_axis/icons/roguetown/misc/structure.dmi';
+	icon_state = "bell_common"
 	},
 /turf/open/floor/rogue/carpet/lord/right,
 /area/rogue/indoors/town/manor/rockhill)
@@ -33248,7 +33264,8 @@
 	pixel_y = 0
 	},
 /obj/structure/table/wood{
-	icon_state = "tablewood1"
+	dir = 4;
+	icon_state = "largetable"
 	},
 /turf/open/floor/rogue/tile/checker,
 /area/rogue/indoors/town/manor/rockhill)
@@ -33676,12 +33693,6 @@
 "iww" = (
 /obj/structure/fluff/walldeco/rpainting/forest{
 	pixel_x = 32
-	},
-/obj/structure/standingbell{
-	name = "servantry service bell";
-	specific_location = "Lord's meeting room";
-	dir = 1;
-	pixel_y = 0
 	},
 /turf/open/floor/rogue/tile,
 /area/rogue/indoors/town/manor/rockhill)
@@ -36199,6 +36210,7 @@
 	icon_state = "borderfall";
 	pixel_x = -8
 	},
+/obj/machinery/light/rogue/candle/l,
 /turf/open/floor/carpet/inn,
 /area/rogue/indoors/town/manor/rockhill)
 "jdv" = (
@@ -48152,11 +48164,11 @@
 	pixel_y = 0
 	},
 /obj/item/flint{
-	pixel_x = -4;
-	pixel_y = 40
+	pixel_y = 30
 	},
 /obj/structure/table/wood{
-	icon_state = "tablewood1"
+	dir = 8;
+	icon_state = "largetable"
 	},
 /turf/open/floor/rogue/tile/checker,
 /area/rogue/indoors/town/manor/rockhill)
@@ -52504,19 +52516,20 @@
 /area/rogue/under/town/sewer)
 "npn" = (
 /obj/item/rogueweapon/huntingknife/chefknife/cleaver{
-	pixel_y = -2;
+	pixel_y = 1;
 	pixel_x = 8
 	},
-/obj/item/reagent_containers/peppermill{
-	pixel_x = -6;
-	pixel_y = -8
-	},
 /obj/item/rogueweapon/huntingknife/chefknife{
-	pixel_y = 3;
-	pixel_x = 4
+	pixel_y = 6;
+	pixel_x = 5
 	},
 /obj/structure/table/wood{
-	icon_state = "tablewood1"
+	dir = 10;
+	icon_state = "largetable"
+	},
+/obj/item/reagent_containers/peppermill{
+	pixel_x = -4;
+	pixel_y = 3
 	},
 /turf/open/floor/rogue/tile/checker,
 /area/rogue/indoors/town/manor/rockhill)
@@ -59135,10 +59148,11 @@
 "pai" = (
 /obj/item/kitchen/rollingpin{
 	pixel_x = 8;
-	pixel_y = 5
+	pixel_y = -2
 	},
 /obj/structure/table/wood{
-	icon_state = "tablewood1"
+	dir = 9;
+	icon_state = "largetable"
 	},
 /turf/open/floor/rogue/tile/checker,
 /area/rogue/indoors/town/manor/rockhill)
@@ -75779,6 +75793,10 @@
 /obj/structure/fluff/statue/knight{
 	pixel_y = 15
 	},
+/obj/machinery/light/rogue/firebowl/standing{
+	pixel_y = 1;
+	pixel_x = 9
+	},
 /turf/open/floor/rogue/tile,
 /area/rogue/indoors/town/manor/rockhill)
 "trS" = (
@@ -79131,16 +79149,6 @@
 	},
 /turf/open/floor/rogue/cobblerock,
 /area/rogue/rockharbor)
-"ulb" = (
-/obj/machinery/light/rogue/candle/r,
-/obj/structure/standingbell{
-	name = "servantry service bell";
-	specific_location = "Lord's Office";
-	dir = 1;
-	pixel_y = 0
-	},
-/turf/open/floor/rogue/wood,
-/area/rogue/indoors/town/manor/rockhill)
 "uld" = (
 /obj/structure/bookcase/random/archive,
 /obj/item/recipe_book/builder,
@@ -81153,18 +81161,19 @@
 "uNd" = (
 /obj/item/rogueweapon/huntingknife/chefknife/cleaver{
 	pixel_x = -9;
-	pixel_y = -2
+	pixel_y = 6
 	},
 /obj/item/reagent_containers/peppermill{
-	pixel_x = 9;
-	pixel_y = -8
+	pixel_x = 10;
+	pixel_y = 3
 	},
 /obj/item/rogueweapon/huntingknife/chefknife{
 	pixel_x = -3;
-	pixel_y = -6
+	pixel_y = 3
 	},
 /obj/structure/table/wood{
-	icon_state = "tablewood1"
+	icon_state = "largetable";
+	dir = 6
 	},
 /turf/open/floor/rogue/tile/checker,
 /area/rogue/indoors/town/manor/rockhill)
@@ -90679,18 +90688,16 @@
 /area/rogue/indoors/town/church)
 "xod" = (
 /obj/item/kitchen/rollingpin{
-	pixel_x = -14;
-	pixel_y = 5
+	pixel_x = -8;
+	pixel_y = 0
 	},
 /obj/item/candle/silver/lit{
-	pixel_x = -3;
-	pixel_y = 11
+	pixel_x = 1;
+	pixel_y = 6
 	},
 /obj/structure/table/wood{
-	icon_state = "tablewood1"
-	},
-/obj/structure/table/wood{
-	icon_state = "tablewood1"
+	dir = 5;
+	icon_state = "largetable"
 	},
 /turf/open/floor/rogue/tile/checker,
 /area/rogue/indoors/town/manor/rockhill)
@@ -607194,7 +607201,7 @@ eTn
 bpH
 rYH
 oif
-ulb
+iZx
 gld
 qTS
 eTn
