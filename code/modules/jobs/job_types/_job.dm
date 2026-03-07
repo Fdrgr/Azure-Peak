@@ -177,9 +177,9 @@
 	return TRUE
 
 /datum/job/proc/get_used_title(mob/player)
-	var/pronouns = player.pronouns
+	var/titles = player.titles_pref
 	var/used_name = display_title || title
-	if((pronouns == SHE_HER || pronouns == THEY_THEM_F) && f_title)
+	if((titles == TITLES_F) && f_title)
 		used_name = f_title
 	return used_name
 
@@ -237,7 +237,7 @@
 
 	if(!H.islatejoin)
 		H.adjust_triumphs(1)
-		H.apply_status_effect(/datum/status_effect/buff/foodbuff)
+		H.apply_status_effect(/datum/status_effect/buff/mealbuff)
 		H.hydration = 1000 // Set higher hydration
 
 		if(H.mind)
@@ -249,12 +249,14 @@
 
 		to_chat(M, span_notice("Rising early, you made sure to pack a pouch of coins in your stash and eat a hearty breakfast before starting your day. A true TRIUMPH!"))
 
+	if(HAS_TRAIT(H, TRAIT_NOHUNGER))
+		H.hydration = 1000
+
 	if(H.islatejoin && announce_latejoin)
 		var/used_title = display_title || title
-		if((H.pronouns == SHE_HER || H.pronouns == THEY_THEM_F) && f_title)
+		if((H.titles_pref == TITLES_F) && f_title)
 			used_title = f_title
-		scom_announce("[H.real_name] the [used_title] arrives to Azure Peak.")
-
+		scom_announce("[H.real_name] the [used_title] arrives to [SSticker.realm_name].")
 	if(give_bank_account)
 		if(give_bank_account > TRUE)
 			SStreasury.create_bank_account(H, give_bank_account)
@@ -270,15 +272,19 @@
 
 	if(cmode_music)
 		H.cmode_music = cmode_music
-
+	var/department = SSjob.bitflag_to_department(department_flag, obsfuscated_job)
 	if (!hidden_job)
-		var/mob_name = H.real_name
-		var/mob_rank
-		if (obsfuscated_job)
-			mob_rank = "Adventurer"
+		var/mob/living/carbon/human/Hu = H
+		if (istype(H, /mob/living/carbon/human))
+			if (obsfuscated_job) // WANDERER
+				GLOB.actors_list[department] += list("[H.mobid]" = "[H.real_name] as the [Hu.dna.species.name] Adventurer<BR>")
+			else
+				GLOB.actors_list[department] += list("[H.mobid]" = "[H.real_name] as the [Hu.dna.species.name] [H.mind.assigned_role]<BR>")
 		else
-			mob_rank = H.mind.assigned_role
-		GLOB.actors_list[H.mobid] = list("name" = mob_name, "rank" = mob_rank)
+			if (obsfuscated_job)
+				GLOB.actors_list[department] += list("[H.mobid]" = "[H.real_name] as Adventurer<BR>")
+			else
+				GLOB.actors_list[department] += list("[H.mobid]" = "[H.real_name] as [H.mind.assigned_role]<BR>")
 
 	if(islist(advclass_cat_rolls))
 		hugboxify_for_class_selection(H)
@@ -449,6 +455,22 @@
 	if(!J)
 		J = SSjob.GetJob(H.job)
 
+	// --- FOG HIJACK START ---
+	// Basically fog protection on spawn
+	if(SSevent_scheduler.fog_scheduled)
+		H.apply_status_effect(/datum/status_effect/buff/fog_grace)
+
+		// Pity Lantern Logic
+		var/lantern_prob = 10
+		var/mob_rank = H.job
+		if(SSevent_scheduler.fog_active)
+			lantern_prob = (mob_rank in GLOB.antagonist_positions) ? 50 : 15
+		else
+			lantern_prob = (mob_rank in GLOB.antagonist_positions) ? 25 : 8
+		if(prob(lantern_prob))
+			new /obj/item/lantern/fog_repelling(H.loc)
+	// --- FOG HIJACK END ---
+
 //Warden and regular officers add this result to their get_access()
 /datum/job/proc/check_config_for_sec_maint()
 	if(CONFIG_GET(flag/security_has_maint_access))
@@ -471,10 +493,16 @@
 
 // LETHALSTONE EDIT: Helper functions for pronoun-based clothing selection
 /proc/should_wear_masc_clothes(mob/living/carbon/human/H)
-	return (H.pronouns == HE_HIM || H.pronouns == THEY_THEM || H.pronouns == SHE_HER_M || (H.pronouns == IT_ITS && H.gender == MALE))
+	if(!H.mind)
+		return (H.pronouns == HE_HIM || H.pronouns == THEY_THEM || H.pronouns == IT_ITS)
+	else 
+		return (H.clothes_pref == CLOTHES_M)
 
 /proc/should_wear_femme_clothes(mob/living/carbon/human/H)
-	return (H.pronouns == SHE_HER || H.pronouns == THEY_THEM_F || H.pronouns == HE_HIM_F || (H.pronouns == IT_ITS && H.gender == FEMALE))
+	if(!H.mind)
+		return (H.pronouns == SHE_HER)
+	else
+		return (H.clothes_pref == CLOTHES_F)
 // LETHALSTONE EDIT END
 
 /datum/job/proc/get_informed_title(mob/mob)
@@ -512,7 +540,12 @@
 					for(var/stat in adv_ref.adv_stat_ceiling)
 						dat += "["[capitalize(stat)]: <b>\Roman[adv_ref.adv_stat_ceiling[stat]]</b>"] | "
 					dat += "<i><br>Regardless of your statpacks or race choice, you will not be able to exceed these stats on spawn.</i></font>"
-				if(adv_ref.subclass_spellpoints > 0)
+				if(LAZYLEN(adv_ref.subclass_spell_point_pools))
+					dat += "<font color = '#a3a7e0'><b>Spell Pools:</b><br>"
+					for(var/pool_name in adv_ref.subclass_spell_point_pools)
+						dat += "[capitalize(pool_name)]: <b>[adv_ref.subclass_spell_point_pools[pool_name]]</b> points<br>"
+					dat += "</font>"
+				else if(adv_ref.subclass_spellpoints > 0)
 					dat += "<font color = '#a3a7e0'>Starting Spellpoints: <b>[adv_ref.subclass_spellpoints]</b></font>"
 				if(length(adv_ref.subclass_languages))
 					dat += "<details><summary><i>Known Languages</i></summary>"
@@ -542,6 +575,12 @@
 					for(var/stashed_item in adv_ref.subclass_stashed_items)
 						dat += "<br> - <i>[stashed_item]</i>"
 					dat += "</font>"
+				if(length(adv_ref.subclass_virtues))
+					dat += "<br><font color ='#7a4d0a'>Subclass Virtues:</font><font color ='#d4b164'>"
+					for(var/virtue_type in adv_ref.subclass_virtues)
+						var/datum/virtue/virtue = virtue_type
+						dat += "<br> - <i>[initial(virtue.name)]</i>"
+					dat += "</font>"
 				dat += "</td>"	//Trait Table end
 				if(length(adv_ref.subclass_skills))
 					dat += "<td width = 50%; style='text-align:right'>"
@@ -566,7 +605,11 @@
 				dat += "</td></tr></table>"//Skill table end
 				if(adv_ref.extra_context)
 					dat += "<font color ='#a06c1e'>[adv_ref.extra_context]"
-					dat += "</font>"
+					dat += "<br></font>"
+
+				if(istype(adv_ref.age_mod))
+					dat += adv_ref.age_mod.get_preview_string()
+
 				dat += "</details>"
 		dat += "<hr>"
 		if(length(job_stats))

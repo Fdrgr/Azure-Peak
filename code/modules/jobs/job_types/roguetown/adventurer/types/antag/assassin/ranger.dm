@@ -49,8 +49,8 @@
 	backr = /obj/item/storage/backpack/rogue/satchel
 	backpack_contents = list(
 					/obj/item/flashlight/flare/torch/lantern/prelit = 1,
-					/obj/item/rogueweapon/scabbard/sheath = 1, 
-					/obj/item/rogueweapon/huntingknife/idagger/steel = 1,
+					/obj/item/rogueweapon/scabbard/sheath = 1,
+					/obj/item/rogueweapon/huntingknife/idagger/warden_machete = 1,
 					/obj/item/needle/thorn = 1,
 					/obj/item/natural/cloth = 1,
 					)
@@ -72,7 +72,7 @@
 			if("Crossbow")
 				H.adjust_skillrank_up_to(/datum/skill/combat/crossbows, SKILL_LEVEL_MASTER, TRUE)
 				backl = /obj/item/gun/ballistic/revolver/grenadelauncher/crossbow
-				beltl = /obj/item/quiver/bolts
+				beltl = /obj/item/quiver/bolt/standard
 
 	if(!istype(H.patron, /datum/patron/inhumen/graggar))
 		var/inputty = input(H, "Would you like to change your patron to Graggar?", "The beast roars", "No") as anything in list("Yes", "No")

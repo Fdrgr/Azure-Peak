@@ -23,9 +23,15 @@
 	var/just_climaxed = FALSE
 	/// Whether to use knot when fucking (for knotted penis types)
 	var/do_knot_action = FALSE
+	/// The bed (if) we're occupying, update on starting an action
+	var/obj/structure/bed/rogue/bed = null
+	var/target_on_bed = FALSE
 
 	var/static/sex_id = 0
 	var/our_sex_id = 0 //this is so we can have more then 1 sex id open at once
+
+	/// Show progress bar
+	var/show_progress = 1
 
 
 /datum/sex_session/New(mob/living/carbon/human/session_user, mob/living/carbon/human/session_target)
@@ -34,12 +40,16 @@
 	sex_id++
 	our_sex_id = sex_id
 	assign_to_collective()
+	find_bed()
 
 	RegisterSignal(user, COMSIG_SEX_CLIMAX, PROC_REF(on_climax))
 	RegisterSignal(user, COMSIG_SEX_AROUSAL_CHANGED, PROC_REF(on_arousal_changed), TRUE)
+	RegisterSignal(user, COMSIG_MOVABLE_MOVED, PROC_REF(on_moved))
+	RegisterSignal(target, COMSIG_MOVABLE_MOVED, PROC_REF(on_moved))
 
 /datum/sex_session/Destroy(force, ...)
-	UnregisterSignal(user, list(COMSIG_SEX_CLIMAX, COMSIG_SEX_AROUSAL_CHANGED))
+	UnregisterSignal(user, list(COMSIG_SEX_CLIMAX, COMSIG_SEX_AROUSAL_CHANGED, COMSIG_MOVABLE_MOVED))
+	UnregisterSignal(target, COMSIG_MOVABLE_MOVED)
 	if(collective)
 		collective.sessions -= src
 		// If this was the last session in the collective, remove the collective
@@ -47,9 +57,41 @@
 			LAZYREMOVE(GLOB.sex_collectives, collective)
 			qdel(collective)
 
-	GLOB.sex_sessions -= src
-	. = ..()
+	user = null
+	target = null
+	collective = null
+	bed = null
+	current_action = null
 
+	GLOB.sex_sessions -= src
+	return ..()
+
+/datum/sex_session/proc/on_moved()
+	SIGNAL_HANDLER
+	find_bed()
+
+/datum/sex_session/proc/on_bed_qdel()
+	SIGNAL_HANDLER
+	bed = null
+	find_bed()
+
+/// Finds a bed we are having fun on, if any
+/datum/sex_session/proc/find_bed()
+	if(bed)
+		if(target.loc == bed.loc)
+			target_on_bed = TRUE
+		else
+			target_on_bed = FALSE
+		return
+	if(target && !(target.mobility_flags & MOBILITY_STAND) && isturf(target.loc)) // find target's bed
+		bed = locate(/obj/structure/bed/rogue) in target.loc
+		target_on_bed = TRUE
+	if(!bed && !(user.mobility_flags & MOBILITY_STAND) && isturf(user.loc)) // find our bed
+		bed = locate(/obj/structure/bed/rogue) in user.loc
+		target_on_bed = FALSE
+
+	if(!bed)
+		target_on_bed = FALSE
 
 /datum/sex_session/proc/assign_to_collective()
 	// Check if we can merge with an existing collective
@@ -85,6 +127,7 @@
 	if(!can_perform_action(action_type))
 		return
 
+	find_bed()
 	desire_stop = FALSE
 	current_action = action_type
 	inactivity = 0
@@ -95,6 +138,8 @@
 /datum/sex_session/proc/try_stop_current_action()
 	if(!current_action)
 		return
+
+	find_bed()
 	desire_stop = TRUE
 
 /datum/sex_session/proc/considered_limp(mob/limper)
@@ -171,7 +216,7 @@
 		return FALSE
 	if(user.stat != CONSCIOUS)
 		return FALSE
-	if(!user.Adjacent(target))
+	if(!user.Adjacent(target) && !action.ranged_action)
 		return FALSE
 	if(action.check_incapacitated && user.incapacitated())
 		return FALSE
@@ -258,45 +303,45 @@
 /datum/sex_session/proc/get_force_string()
 	switch(force)
 		if(SEX_FORCE_LOW)
-			return "<font color='#eac8de'>GENTLE</font>"
+			return "<font color='#eac8de'>НЕЖНО</font>"
 		if(SEX_FORCE_MID)
-			return "<font color='#e9a8d1'>FIRM</font>"
+			return "<font color='#e9a8d1'>НАСТОЙЧИВО</font>"
 		if(SEX_FORCE_HIGH)
-			return "<font color='#f05ee1'>ROUGH</font>"
+			return "<font color='#f05ee1'>ГРУБО</font>"
 		if(SEX_FORCE_EXTREME)
-			return "<font color='#d146f5'>BRUTAL</font>"
+			return "<font color='#d146f5'>НЕУМОЛИМО</font>"
 
 /datum/sex_session/proc/get_speed_string()
 	switch(speed)
 		if(SEX_SPEED_LOW)
-			return "<font color='#eac8de'>SLOW</font>"
+			return "<font color='#eac8de'>МЕДЛЕННО</font>"
 		if(SEX_SPEED_MID)
-			return "<font color='#e9a8d1'>STEADY</font>"
+			return "<font color='#e9a8d1'>ПОСТЕПЕННО</font>"
 		if(SEX_SPEED_HIGH)
-			return "<font color='#f05ee1'>QUICK</font>"
+			return "<font color='#f05ee1'>БЫСТРО</font>"
 		if(SEX_SPEED_EXTREME)
-			return "<font color='#d146f5'>UNRELENTING</font>"
+			return "<font color='#d146f5'>НЕУМОЛИМО</font>"
 
 /datum/sex_session/proc/get_manual_arousal_string()
 	switch(manual_arousal)
 		if(SEX_MANUAL_AROUSAL_DEFAULT)
-			return "<font color='#eac8de'>NATURAL</font>"
+			return "<font color='#eac8de'>ПЕРЕМЕННАЯ ЭРЕКЦИЯ</font>"
 		if(SEX_MANUAL_AROUSAL_UNAROUSED)
-			return "<font color='#e9a8d1'>UNAROUSED</font>"
+			return "<font color='#e9a8d1'>СЛАБАЯ ЭРЕКЦИЯ</font>"
 		if(SEX_MANUAL_AROUSAL_PARTIAL)
-			return "<font color='#f05ee1'>PARTIALLY ERECT</font>"
+			return "<font color='#f05ee1'>НОРМАЛЬНАЯ ЭРЕКЦИЯ</font>"
 		if(SEX_MANUAL_AROUSAL_FULL)
-			return "<font color='#d146f5'>FULLY ERECT</font>"
+			return "<font color='#d146f5'>СИЛЬНАЯ ЭРЕКЦИЯ</font>"
 /datum/sex_session/proc/get_generic_force_adjective()
 	switch(force)
 		if(SEX_FORCE_LOW)
-			return pick(list("gently", "carefully", "tenderly", "gingerly", "delicately", "lazily"))
+			return pick(list("нежно", "заботливо", "ласково", "мягко", "осторожно", "неторопливо"))
 		if(SEX_FORCE_MID)
-			return pick(list("firmly", "vigorously", "eagerly", "steadily", "intently"))
+			return pick(list("решительно", "энергично", "страстно", "уверенно", "увлеченно"))
 		if(SEX_FORCE_HIGH)
-			return pick(list("roughly", "carelessly", "forcefully", "fervently", "fiercely"))
+			return pick(list("грубо", "небрежно", "жестко", "пылко", "свирепо"))
 		if(SEX_FORCE_EXTREME)
-			return pick(list("brutally", "violently", "relentlessly", "savagely", "mercilessly"))
+			return pick(list("жестоко", "неистово", "неумолимо", "свирепо", "безжалостно"))
 
 /datum/sex_session/proc/spanify_force(string)
 	switch(force)
@@ -319,7 +364,7 @@
 /datum/sex_session/ui_interact(mob/user, datum/tgui/ui)
 	ui = SStgui.try_update_ui(user, src, ui)
 	if(!ui)
-		ui = new(user, src, "SexSession", "Sate Desires")
+		ui = new(user, src, "SexSession", "Утолить Желания")
 		ui.open()
 
 /datum/sex_session/ui_state(mob/user)
@@ -343,8 +388,8 @@
 	data["actions"] = actions
 
 	// Static UI strings
-	data["speed_names"] = list("SLOW", "STEADY", "QUICK", "UNRELENTING")
-	data["force_names"] = list("GENTLE", "FIRM", "ROUGH", "BRUTAL")
+	data["speed_names"] = list("МЕДЛЕННО", "ПОСТЕПЕННО", "БЫСТРО", "НЕУМОЛИМО")
+	data["force_names"] = list("НЕЖНО", "НАСТОЙЧИВО", "ГРУБО", "ЖЕСТОКО")
 	data["has_penis"] = user.getorganslot(ORGAN_SLOT_PENIS) ? TRUE : FALSE
 
 	// Check if user has knotted penis
@@ -434,6 +479,7 @@
 			. = TRUE
 		if("set_arousal_value")
 			SEND_SIGNAL(user, COMSIG_SEX_SET_AROUSAL, params["amount"])
+			user.apply_status_effect(/datum/status_effect/debuff/no_coom_cheating)
 			. = TRUE
 		if("freeze_arousal")
 			SEND_SIGNAL(user, COMSIG_SEX_FREEZE_AROUSAL)
@@ -442,12 +488,13 @@
 			if(collective)
 				collective.collective_display_name = params["name"]
 			. = TRUE
-
+		if("refresh")
+			. = TRUE
 	if(.)
 		SStgui.update_uis(src)
 
 /datum/sex_session/proc/get_sex_session_header_text()
-	return "Interacting with [target?.name || "Unknown"]..."
+	return "Соитие с [target?.name || "Unknown"]..."
 
 /datum/sex_session/proc/get_session_tab_content()
 	var/list/content = list()

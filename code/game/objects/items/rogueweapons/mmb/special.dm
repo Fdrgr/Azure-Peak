@@ -16,7 +16,8 @@
 	if(!user.cmode)
 		if(ishuman(user) && ishuman(target))
 			var/mob/living/carbon/human/H = user
-			H.attempt_steal(user, target)
+			if(target.Adjacent(H))
+				H.attempt_steal(user, target)
 			return
 	if(user.has_status_effect(/datum/status_effect/debuff/specialcd))
 		return
@@ -32,7 +33,7 @@
 			if(user.get_skill_level(skillreq) < SKILL_LEVEL_JOURNEYMAN)
 				to_chat(user, span_info("I'm not knowledgeable enough in the arts of this weapon to use this."))
 				return
-		if(W.special.check_range(user, target))
+		if(W.special.check_range(user, target) && W.special.check_reqs(user, W))
 			if(W.special.apply_cost(user))
 				W.special.deploy(user, W, target)
 

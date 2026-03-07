@@ -1,6 +1,7 @@
 /mob/living/simple_animal/hostile/retaliate/rogue/minotaur
 	icon = 'icons/mob/newminotaur.dmi'
 	name = "Minotaur"
+	desc = "An unusually giant relative of the more familiar manners of Wild-Kin. This one looks aggressive."
 	icon_state = "MinotaurMale"
 	icon_living = "MinotaurMale"
 	icon_dead = "MinotaurMale_dead"
@@ -21,11 +22,10 @@
 	botched_butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/steak = 1,
 						/obj/item/natural/hide = 1, /obj/item/natural/bundle/bone/full = 2)
 	butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/steak = 2,
-						/obj/item/natural/hide = 2, /obj/item/natural/bundle/bone/full = 2,
-						/obj/item/natural/head/minotaur = 1)
+						/obj/item/natural/hide = 2, /obj/item/natural/bundle/bone/full = 2)
 	perfect_butcher_results = list(/obj/item/reagent_containers/food/snacks/rogue/meat/steak = 4,
-						/obj/item/natural/hide = 4, /obj/item/natural/bundle/bone/full = 2,
-						/obj/item/natural/head/minotaur = 1)
+						/obj/item/natural/hide = 4, /obj/item/natural/bundle/bone/full = 2)
+	head_butcher = /obj/item/natural/head/minotaur
 	faction = list("caves")
 
 	health = MINOTAUR_HEALTH

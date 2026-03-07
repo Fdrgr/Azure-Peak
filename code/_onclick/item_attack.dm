@@ -20,6 +20,11 @@
 		if(HAS_TRAIT(user, TRAIT_CHUNKYFINGERS))
 			to_chat(user, span_warning("...What?"))
 			return
+		// FAR less aggressive version of chunkyfingers, designed to be used with nudist. Shrimply lets the user still use neat stuff like orison without letting them weaponize.
+		if(HAS_TRAIT(user, TRAIT_GNARLYDIGITS))
+			if(istype(src, /obj/item/rogueweapon) && !istype(src, /obj/item/rogueweapon/werewolf_claw))
+				to_chat(user, span_warning("My fingers are too misshapen to use this puny implement."))
+				return
 	if(tool_behaviour && target.tool_act(user, src, tool_behaviour))
 		return
 	if(pre_attack(target, user, params))
@@ -109,12 +114,22 @@
 		override_status = ATTACK_OVERRIDE_NODEFENSE
 
 
+	if(HAS_TRAIT(M, TRAIT_TEMPO))
+		if(ishuman(M) && ishuman(user) && user.mind)
+			var/mob/living/carbon/human/H = M
+			H.process_tempo_attack(user)
+
+
 	if(item_flags & NOBLUDGEON)
 		return FALSE	
 
 	if(force && HAS_TRAIT(user, TRAIT_PACIFISM))
 		to_chat(user, span_warning("I don't want to harm other living beings!"))
 		return
+
+	if(force && user.rogue_sneaking)
+		user.mob_timers[MT_FOUNDSNEAK] = world.time
+		user.update_sneak_invis(reset = TRUE)
 
 	M.lastattacker = user.real_name
 	M.lastattackerckey = user.ckey
@@ -140,7 +155,7 @@
 
 	var/datum/intent/cached_intent = user.used_intent
 	if(swingdelay)
-		if(!user.used_intent.noaa && isnull(user.mind))
+		if(!user.used_intent.noaa && isnull(user.mind) && !user.used_intent.cleave)
 			if(get_dist(get_turf(user), get_turf(M)) <= user.used_intent.reach)
 				user.do_attack_animation(M, user.used_intent.animname, user.used_intent.masteritem, used_intent = user.used_intent, simplified = TRUE)
 		sleep(swingdelay)
@@ -156,7 +171,7 @@
 		return
 	if((M.mobility_flags & MOBILITY_STAND))
 		if(M.checkmiss(user))
-			if(!swingdelay)
+			if(!swingdelay && !user.used_intent?.cleave)
 				if(get_dist(get_turf(user), get_turf(M)) <= user.used_intent.reach)
 					user.do_attack_animation(M, user.used_intent.animname, used_item = src, used_intent = user.used_intent, simplified = TRUE)
 			return
@@ -184,14 +199,24 @@
 	//Niche signal for post-swingdelay attacks when we want to care about those.
 	_attacker_signal = null
 	_attacker_signal = SEND_SIGNAL(user, COMSIG_MOB_ITEM_ATTACK_POST_SWINGDELAY, M, user, src)
-	if(_attacker_signal & COMPONENT_ITEM_NO_ATTACK)
+	var/_defender_signal = SEND_SIGNAL(M, COMSIG_MOB_ITEM_POST_SWINGDELAY_ATTACKED, M, user, src)
+	if(_attacker_signal & COMPONENT_ITEM_NO_ATTACK || _defender_signal & COMPONENT_ITEM_NO_ATTACK)
 		return FALSE
-	else if(_attacker_signal & COMPONENT_ITEM_NO_DEFENSE)
+	else if(_attacker_signal & COMPONENT_ITEM_NO_DEFENSE || _defender_signal & ATTACK_OVERRIDE_NODEFENSE)
 		override_status = ATTACK_OVERRIDE_NODEFENSE
 
 	if(override_status != ATTACK_OVERRIDE_NODEFENSE)
 		if(M.checkdefense(user.used_intent, user))
 			return
+
+	if(user.mind)
+		if(user.client?.prefs?.attack_blip_frequency != ATTACK_BLIP_PREF_NEVER)
+			var/blip_prob = user.client?.prefs?.attack_blip_frequency
+			if(prob(blip_prob))
+				user.emote("attack", forced = TRUE)
+	else
+		if(prob(PROB_ATTACK_EMOTE_NPC))
+			user.emote("attack", forced = TRUE)
 
 	SEND_SIGNAL(src, COMSIG_ITEM_ATTACK_SUCCESS, M, user)
 	SEND_SIGNAL(M, COMSIG_ITEM_ATTACKED_SUCCESS, src, user)
@@ -227,7 +252,20 @@
 			else
 				playsound(M.loc,  "nodmg", 100, FALSE, -1)
 
+		if(M.has_flaw(/datum/charflaw/addiction/thrillseeker))
+			var/datum/component/arousal/CAR = M.GetComponent(/datum/component/arousal)
+			if(CAR)
+				CAR.adjust_arousal_special(src, 2)
+
+		if(user.has_flaw(/datum/charflaw/addiction/thrillseeker))
+			var/datum/component/arousal/CAR = user.GetComponent(/datum/component/arousal)
+			if(CAR)
+				CAR.adjust_arousal_special(src, 2)
+				
 	log_combat(user, M, "attacked", src.name, "(INTENT: [uppertext(user.used_intent.name)]) (DAMTYPE: [uppertext(damtype)])")
+
+	execute_cleave(user, get_turf(M), M)
+
 	add_fingerprint(user)
 
 
@@ -242,10 +280,47 @@
 		return TRUE
 
 /obj/item/proc/attack_turf(turf/T, mob/living/user, multiplier)
+	if(SEND_SIGNAL(src, COMSIG_ITEM_ATTACK_TURF, T, user) & COMPONENT_NO_ATTACK_OBJ)
+		return
+	execute_cleave(user, T)
 	if(T.max_integrity)
 		if(T.attacked_by(src, user, multiplier))
 			user.do_attack_animation(T, simplified = TRUE)
 			return TRUE
+
+/// Executes cleave secondary attacks around an origin turf. Primary is excluded from targets (if any).
+/obj/item/proc/execute_cleave(mob/living/user, turf/origin, mob/living/primary)
+	var/datum/cleave_pattern/cleave = user.used_intent?.cleave
+	if(!cleave)
+		return
+	if(primary && QDELETED(primary))
+		return
+	var/list/cleave_turfs = cleave.get_cleave_turfs(user, origin)
+	cleave_sharpness_mult = 0.5
+	// Collect targets, living first then dead
+	var/list/living_targets = list()
+	var/list/dead_targets = list()
+	for(var/turf/T in cleave_turfs)
+		for(var/mob/living/L in T)
+			if(L == primary || L == user)
+				continue
+			if(L.stat == DEAD)
+				dead_targets += L
+			else
+				living_targets += L
+	var/cleave_targets_hit = 0
+	for(var/mob/living/L in living_targets + dead_targets)
+		if(cleave.max_targets && cleave_targets_hit >= cleave.max_targets)
+			break
+		if(L.checkdefense(user.used_intent, user))
+			continue
+		if(L.attacked_by(src, user))
+			cleave_targets_hit++
+			var/tempsound = user.used_intent?.hitsound
+			if(tempsound)
+				playsound(L.loc, tempsound, 100, FALSE, -1)
+			log_combat(user, L, "cleaved", src.name, "(INTENT: [uppertext(user.used_intent.name)])")
+	cleave_sharpness_mult = 1
 
 /atom/movable/proc/attacked_by()
 	return FALSE
@@ -269,8 +344,6 @@
 		var/mob/living/carbon/C = user
 		if(C.domhand)
 			used_str = C.get_str_arms(C.used_hand)
-	if(istype(user.rmb_intent, /datum/rmb_intent/weak))
-		used_str--
 	if(ishuman(user))
 		var/mob/living/carbon/human/user_human = user
 		if(user_human.clan) // For each level of potence user gains 0.5 STR, at 5 Potence their STR buff is 2.5
@@ -403,16 +476,19 @@
 	if(istype(user.rmb_intent, /datum/rmb_intent/strong))
 		newforce += (I.force_dynamic * STRONG_STANCE_DMG_BONUS)
 
+	if(istype(user.rmb_intent, /datum/rmb_intent/weak))
+		newforce = (newforce * 0.2)
+
+	newforce = CLAMP(newforce, user.used_intent.min_intent_damage, user.used_intent.max_intent_damage)
+
 	return newforce
 
 /obj/attacked_by(obj/item/I, mob/living/user)
 	user.changeNext_move(CLICK_CD_INTENTCAP)
-	var/newforce = (get_complex_damage(I, user, blade_dulling) * I.demolition_mod)
+	var/newforce = get_complex_damage(I, user, blade_dulling) * user.used_intent.demolition_mod
 	if(!newforce)
-
 		return 0
 	if(newforce < damage_deflection)
-
 		return 0
 	if(user.used_intent.no_attack)
 		return 0
@@ -537,6 +613,10 @@
 /mob/living/attacked_by(obj/item/I, mob/living/user)
 	var/hitlim = simple_limb_hit(user.zone_selected)
 
+	if(HAS_TRAIT(src, "ethereal")) //TA EDIT
+		user.visible_message(span_warning("The [I] passes harmlessly through [src]'s misty form!"))
+		return FALSE
+	
 	I.funny_attack_effects(src, user)
 	if(I.force_dynamic)
 		var/newforce = get_complex_damage(I, user)

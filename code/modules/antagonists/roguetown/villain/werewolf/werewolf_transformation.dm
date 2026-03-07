@@ -27,12 +27,14 @@
 			transformed = TRUE // Mark as transformed
 
 		else if (world.time >= transforming + 25 SECONDS) // Stage 2
+			
 			if(H.show_redflash())
 				H.flash_fullscreen("redflash3")
 			H.emote("agony", forced = TRUE)
 			to_chat(H, span_userdanger("UNIMAGINABLE PAIN!"))
 			H.Stun(30)
 			H.Knockdown(30)
+			H.drop_all_held_items()
 
 		else if (world.time >= transforming + 10 SECONDS) // Stage 1
 			H.emote("")
@@ -97,7 +99,9 @@
 		W.name = Were.wolfname
 	W.limb_destroyer = TRUE
 	W.ambushable = FALSE
-	W.cmode_music = 'sound/music/cmode/antag/combat_darkstar.ogg'
+	var/list/dying_world = list('sound/music/cmode/antag/combat_dying_world.ogg' = 1,  // probably best if its not vocals all the time
+							'sound/music/cmode/antag/combat_dying_world_instrumental.ogg' = 3) // 1/4 is good odds for 1/round tho
+	W.cmode_music = pickweight(dying_world)
 	W.skin_armor = new /obj/item/clothing/suit/roguetown/armor/regenerating/skin/werewolf_skin(W)
 	playsound(W.loc, pick('sound/combat/gib (1).ogg','sound/combat/gib (2).ogg'), 200, FALSE, 3)
 	W.spawn_gibs(FALSE)
@@ -129,6 +133,15 @@
 
 	to_chat(W, span_userdanger("I transform into a horrible beast!"))
 	W.emote("rage")
+
+	if(getorganslot(ORGAN_SLOT_PENIS))
+		W.internal_organs_slot[ORGAN_SLOT_PENIS] = /obj/item/organ/penis/knotted/big
+	if(getorganslot(ORGAN_SLOT_TESTICLES))
+		W.internal_organs_slot[ORGAN_SLOT_TESTICLES] = /obj/item/organ/testicles
+	if(getorganslot(ORGAN_SLOT_BREASTS))
+		W.internal_organs_slot[ORGAN_SLOT_BREASTS] = /obj/item/organ/breasts
+	if(getorganslot(ORGAN_SLOT_VAGINA))
+		W.internal_organs_slot[ORGAN_SLOT_VAGINA] = /obj/item/organ/vagina
 
 	W.adjust_skillrank(/datum/skill/combat/wrestling, 5, TRUE)
 	W.adjust_skillrank(/datum/skill/combat/unarmed, 5, TRUE)
@@ -187,6 +200,7 @@
 	playsound(W.loc, pick('sound/combat/gib (1).ogg','sound/combat/gib (2).ogg'), 200, FALSE, 3)
 	W.spawn_gibs(FALSE)
 	W.Knockdown(30)
+	W.drop_all_held_items()
 	W.Stun(30)
 
 	qdel(src)

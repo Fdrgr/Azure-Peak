@@ -2,7 +2,7 @@
 /datum/job/roguetown/vampire_spawn
 	title = "Vampire Spawn"
 	flag = VAMPIRE_SERVANT
-	department_flag = SLOP
+	department_flag = ANTAGONIST
 	faction = "Station"
 	total_positions = 0
 	spawn_positions = 0
@@ -71,7 +71,7 @@
 			"Claymore",
 			"Great Mace",
 			"Battle Axe",
-			"Greataxe",
+			"Poleaxe",
 			"Estoc",
 			"Lucerne",
 			"Partizan",
@@ -81,7 +81,7 @@
 			if("Longsword + Crossbow")
 				beltl = /obj/item/rogueweapon/scabbard/sword
 				r_hand = /obj/item/rogueweapon/sword/long
-				beltr = /obj/item/quiver/bolts
+				beltr = /obj/item/quiver/bolt/standard
 				backl = /obj/item/gun/ballistic/revolver/grenadelauncher/crossbow
 			if("Billhook + Recurve Bow")
 				r_hand = /obj/item/rogueweapon/spear/billhook
@@ -104,8 +104,8 @@
 				r_hand = /obj/item/rogueweapon/mace/goden/steel
 			if("Battle Axe")
 				r_hand = /obj/item/rogueweapon/stoneaxe/battle
-			if("Greataxe")
-				r_hand = /obj/item/rogueweapon/greataxe/steel
+			if("Poleaxe")
+				r_hand = /obj/item/rogueweapon/greataxe/steel/knight
 				backl = /obj/item/rogueweapon/scabbard/gwstrap
 			if("Estoc")
 				r_hand = /obj/item/rogueweapon/estoc
@@ -140,7 +140,7 @@
 
 		var/armors = list(
 			"Brigandine"		= /obj/item/clothing/suit/roguetown/armor/brigandine/retinue,
-			"Coat of Plates"	= /obj/item/clothing/suit/roguetown/armor/brigandine/coatplates,
+			"Coat of Plates"	= /obj/item/clothing/suit/roguetown/armor/plate/scale/knight,
 			"Steel Cuirass"		= /obj/item/clothing/suit/roguetown/armor/plate/cuirass,
 			"Fluted Cuirass"	= /obj/item/clothing/suit/roguetown/armor/plate/cuirass/fluted,
 		)
@@ -152,4 +152,5 @@
 		/obj/item/rope/chain = 1, 
 		/obj/item/rogueweapon/scabbard/sheath = 1
 	)
+	H.grant_language(/datum/language/common)
 #undef CTAG_VAMPIRE_SPAWN

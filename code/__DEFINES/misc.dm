@@ -33,9 +33,9 @@
 #define LEG_PART_LAYER			40
 #define LEGWEAR_LAYER			39
 #define PANTS_LAYER				38
-#define SHOES_LAYER				37
-#define LEG_DAMAGE_LAYER		36
-#define LEGSLEEVE_LAYER			35
+#define LEG_DAMAGE_LAYER		37
+#define LEGSLEEVE_LAYER			36
+#define SHOES_LAYER				35
 #define SHOESLEEVE_LAYER		34
 #define SHIRT_LAYER				33
 #define WRISTS_LAYER			32
@@ -452,6 +452,7 @@ GLOBAL_LIST_INIT(pda_styles, sortList(list(MONO, VT, ORBITRON, SHARE)))
 //Filters
 #define AMBIENT_OCCLUSION filter(type="drop_shadow", x=0, y=-2, size=3, offset=1, color="#04080f96")
 #define AMBIENT_OCCLUSION_WALLS filter(type="drop_shadow", x=0, y=-2, size=8, offset=4, color="#000000ff")
+
 #define GAUSSIAN_BLUR(filter_size) filter(type="blur", size=filter_size)
 
 #define CAMERA_NO_GHOSTS 0

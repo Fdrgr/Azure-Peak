@@ -14,7 +14,7 @@
 	droning_sound_night = 'sound/music/area/sleeping.ogg'
 	converted_type = /area/rogue/outdoors/exposed/town
 	town_area = TRUE
-	deathsight_message = "the city of Azure Peak and all its bustling souls"
+	deathsight_message = "the city of Twilight Axis and all its bustling souls"
 	detail_text = DETAIL_TEXT_AZURE_PEAK
 
 /area/rogue/outdoors/exposed/town
@@ -22,6 +22,7 @@
 	droning_sound = 'sound/music/area/towngen.ogg'
 	droning_sound_dusk = 'sound/music/area/septimus.ogg'
 	droning_sound_night = 'sound/music/area/sleeping.ogg'
+	fog_protected = TRUE
 
 /area/rogue/outdoors/exposed/town/keep
 	name = "Keep"
@@ -44,7 +45,7 @@
 	droning_sound_dusk = null
 	droning_sound_night = null
 	converted_type = /area/rogue/outdoors/exposed/manorgarri
-	first_time_text = "THE KEEP OF AZURE PEAK"
+	first_time_text = "THE KEEP OF TWILIGHT AXIS"
 	keep_area = TRUE
 	detail_text = DETAIL_TEXT_MANOR
 

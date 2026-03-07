@@ -22,7 +22,7 @@
 		STASPD = 16
 
 		AddSpell(new /obj/effect/proc_holder/spell/self/foxclaws)
-		real_name = "Vernard"
+		real_name = "vernard"
 		faction += "wolfs"
 
 /datum/species/shapefox
@@ -98,7 +98,7 @@
 
 /datum/intent/simple/fox
 	name = "claw"
-	clickcd = 10
+	clickcd = CLICK_CD_QUICK
 	icon_state = "incut"
 	blade_class = BCLASS_CUT
 	attack_verb = list("claws", "mauls", "eviscerates")

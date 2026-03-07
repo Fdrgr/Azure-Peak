@@ -16,43 +16,12 @@
 	equip_knight()
 	forge_objectives()
 
-/// Skeletonizes the owner, making it a skeleton. Separate proc in hopes that someone will remove duplicate skelecode from AP.
+/// Skeletonizes the owner using shared become_skeleton() proc.
 /datum/antagonist/unbound_death_knight/proc/skeletonize()
-	if(isdwarf(owner.current)) // I am terribly sorry, fellow dwarfs. Remove this after death knight's armor works with dwarves.
-		owner.current.set_species(/datum/species/human/northern)
-
 	var/mob/living/carbon/human/L = owner.current
-	QDEL_NULL(L.charflaw)
-	L.hairstyle = "Bald"
-	L.facial_hairstyle = "Shaved"
-	L.mob_biotypes = MOB_UNDEAD
-	var/obj/item/organ/eyes/eyes = L.getorganslot(ORGAN_SLOT_EYES)
-	if (eyes)
-		eyes.Remove(L, TRUE)
-		QDEL_NULL(eyes)
-	eyes = new /obj/item/organ/eyes/night_vision/zombie
-	eyes.Insert(L)
-	for(var/obj/item/bodypart/B in L.bodyparts)
-		B.skeletonize(FALSE)
-	L.base_intents = list(INTENT_HELP, INTENT_DISARM, INTENT_GRAB, /datum/intent/simple/claw)
-	L.update_a_intents()
-
-	L.update_body()
-	L.update_hair()
-	L.update_body_parts(redraw = TRUE)
-
-	ADD_TRAIT(L, TRAIT_NOMOOD, TRAIT_GENERIC)
-	ADD_TRAIT(L, TRAIT_INFINITE_STAMINA, TRAIT_GENERIC)
-	ADD_TRAIT(L, TRAIT_NOLIMBDISABLE, TRAIT_GENERIC)
-	ADD_TRAIT(L, TRAIT_NOHUNGER, TRAIT_GENERIC)
-	ADD_TRAIT(L, TRAIT_NOBREATH, TRAIT_GENERIC)
-	ADD_TRAIT(L, TRAIT_NOPAIN, TRAIT_GENERIC)
-	ADD_TRAIT(L, TRAIT_TOXIMMUNE, TRAIT_GENERIC)
-	ADD_TRAIT(L, TRAIT_NOSLEEP, TRAIT_GENERIC)
-	ADD_TRAIT(L, TRAIT_SHOCKIMMUNE, TRAIT_GENERIC)
+	L.become_skeleton()
 	ADD_TRAIT(L, TRAIT_HEAVYARMOR, TRAIT_GENERIC)
 	ADD_TRAIT(L, TRAIT_ARCYNE_T2, TRAIT_GENERIC)
-	ADD_TRAIT(L, TRAIT_SELF_SUSTENANCE, TRAIT_GENERIC)
 
 /datum/antagonist/unbound_death_knight/proc/equip_knight()
 	owner.unknow_all_people()
@@ -65,19 +34,19 @@
 	H.equipOutfit(/datum/outfit/job/roguetown/unbound_deathknight)
 
 /datum/antagonist/unbound_death_knight/greet()
-	sleep(5 SECONDS) // Lets all other messages finish before we start.
+	stoplag(5 SECONDS) // Lets all other messages finish before we start.
 	to_chat(owner, span_warning("You feel the power of unknown energy course through you."))
-	sleep(1 SECONDS)
+	stoplag(1 SECONDS)
 	to_chat(owner, span_warning("You are... Awake? But how?"))
-	sleep(1 SECONDS)
+	stoplag(1 SECONDS)
 	to_chat(owner, span_warning("The realization of what is happening slowly overwhelms you with horror..."))
-	sleep(2 SECONDS)
+	stoplag(2 SECONDS)
 	to_chat(owner, "<span class='pulsedeath'>Your master is gone!</span>")
-	sleep(1 SECONDS)
+	stoplag(1 SECONDS)
 	to_chat(owner, "<span class='pulsedeath'>You have no orders!</span>")
-	sleep(1 SECONDS)
+	stoplag(1 SECONDS)
 	to_chat(owner, "<span class='pulsedeath'>You have no goal!</span>")
-	sleep(2 SECONDS)
+	stoplag(2 SECONDS)
 	to_chat(owner, "<span class='pulsedeath'>You have no reason to be here. But you are awake.</span>")
 
 /datum/antagonist/unbound_death_knight/proc/forge_objectives()
@@ -151,11 +120,11 @@
 
 	beltl = /obj/item/rogueweapon/scabbard/sword
 	belt = /obj/item/storage/belt/rogue/leather
-	pants = /obj/item/clothing/under/roguetown/platelegs/blk/death
+	pants = /obj/item/clothing/under/roguetown/platelegs/blkknight/death
 	shoes = /obj/item/clothing/shoes/roguetown/boots/armor/blkknight
 	shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/black
 	armor = /obj/item/clothing/suit/roguetown/armor/plate/blkknight/death
-	gloves = /obj/item/clothing/gloves/roguetown/plate/blk/death
+	gloves = /obj/item/clothing/gloves/roguetown/plate/blkknight/death
 	backr = /obj/item/storage/backpack/rogue/satchel/black
 
 	H.change_stat(STATKEY_INT, 3)
@@ -242,8 +211,8 @@
 /obj/item/clothing/shoes/roguetown/boots/armor/blkknight/death
 	color = CLOTHING_BLACK
 
-/obj/item/clothing/gloves/roguetown/plate/blk/death
+/obj/item/clothing/gloves/roguetown/plate/blkknight/death
 	color = CLOTHING_BLACK
 
-/obj/item/clothing/under/roguetown/platelegs/blk/death
+/obj/item/clothing/under/roguetown/platelegs/blkknight/death
 	color = CLOTHING_BLACK

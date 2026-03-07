@@ -4,8 +4,8 @@
 
 
 /datum/keybinding/living/swap_left
-	hotkey_keys = list("Q")
-	classic_keys = list("Q") // PAGEUP
+	hotkey_keys = list()
+	classic_keys = list() // PAGEUP
 	name = "swap_left"
 	full_name = "Swap to left hand"
 	description = ""
@@ -25,8 +25,8 @@
 	return TRUE
 
 /datum/keybinding/living/swap_right
-	hotkey_keys = list("E")
-	classic_keys = list("E") // PAGEUP
+	hotkey_keys = list()
+	classic_keys = list() // PAGEUP
 	name = "swap_right"
 	full_name = "Swap to right hand"
 	description = ""
@@ -46,8 +46,8 @@
 	return TRUE
 
 /datum/keybinding/living/swap_hands
-	hotkey_keys = list()
-	classic_keys = list()
+	hotkey_keys = list("X")
+	classic_keys = list("X")
 	name = "swap_hands"
 	full_name = "Swap hands"
 	description = ""
@@ -62,8 +62,8 @@
 	return TRUE
 
 /datum/keybinding/living/activate_inhand
-	hotkey_keys = list()
-	classic_keys = list()
+	hotkey_keys = list("Z")
+	classic_keys = list("Z")
 	name = "activate_inhand"
 	full_name = "Activate in-hand"
 	description = "Uses whatever item you have inhand"
@@ -78,7 +78,7 @@
 
 
 /datum/keybinding/living/drop_item
-	hotkey_keys = list("Z")
+	hotkey_keys = list("Q")
 	name = "drop_item"
 	full_name = "Drop Item"
 	description = ""
@@ -95,7 +95,7 @@
 	return TRUE
 
 /datum/keybinding/living/sprint
-	hotkey_keys = list()
+	hotkey_keys = list("Alt")
 	name = "sprint"
 	full_name = "Sprint"
 	description = "Sprinting can be dangerous to your health if you aren't careful."
@@ -145,8 +145,8 @@
 /datum/keybinding/living/toggle_compliance
 	hotkey_keys = list()
 	name = "toggle_compliance"
-	full_name = "Toggle Compliance"
-	description = "At-will toggle to fail defense rolls, both when getting grabbed/tackled, and when others resist out your grabs."
+	full_name = "Toggle Compliance Mode"
+	description = "At-will, silent toggle to fail defense rolls, both when getting grabbed/tackled, and when others resist out your grabs. Additionally speeds up restraining you and stripping you. Dangerous in combat!"
 
 /datum/keybinding/living/toggle_compliance/down(client/user)
 	var/mob/living/L = user.mob
@@ -156,7 +156,7 @@
 	return TRUE
 
 /datum/keybinding/living/resist
-	hotkey_keys = list("X")
+	hotkey_keys = list("B")
 	name = "cancelresist"
 	full_name = "Resist"
 	description = "Spam this to resist against a grab."
@@ -287,6 +287,8 @@
 
 /datum/keybinding/living/pixel_shift_layerup/down(client/user)
 	var/mob/living/M = user.mob
+	if(!isliving(M))
+		return FALSE
 	if(M.pixelshift_layer <= 0.04)
 		M.is_shifted = TRUE
 		M.pixelshift_layer = M.pixelshift_layer + 0.01
@@ -302,6 +304,8 @@
 
 /datum/keybinding/living/pixel_shift_layerdown/down(client/user)
 	var/mob/living/M = user.mob
+	if(!isliving(M))
+		return FALSE
 	if(M.pixelshift_layer >= -0.04)
 		M.is_shifted = TRUE
 		M.pixelshift_layer = M.pixelshift_layer - 0.01

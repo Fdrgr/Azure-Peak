@@ -95,7 +95,7 @@
 		target.chat_color_darkened = target.chat_color
 
 	// Get rid of any URL schemes that might cause BYOND to automatically wrap something in an anchor tag
-	var/static/regex/url_scheme = new(@"[A-Za-z][A-Za-z0-9+-\.]*:\/\/", "g")
+	var/static/regex/url_scheme = new(@"[A-Za-zА-Яа-я][A-Za-zА-Яа-я0-9+-\.]*:\/\/", "g")
 	text = replacetext(text, url_scheme, "")
 
 	// Reject whitespace
@@ -113,6 +113,10 @@
 		var/image/r_icon = image('icons/UI_Icons/chat/chat_icons.dmi', icon_state = "radio")
 		text =  "\icon[r_icon]&nbsp;" + text
 
+	if(extra_classes.Find("mindlink"))
+		target.chat_color = "#2681a5"
+		target.chat_color_darkened = "#2681a5"
+
 	// We dim italicized text to make it more distinguishable from regular text
 	var/tgt_color = extra_classes.Find("italics") ? target.chat_color_darkened : target.chat_color
 
@@ -121,13 +125,14 @@
 		font_size = 7
 		tgt_color = "#adadad"
 
+	if(extra_classes.Find("mindlink"))
+		font_size = 5
 	// Approximate text height
 	// Note we have to replace HTML encoded metacharacters otherwise MeasureText will return a zero height
 	// BYOND Bug #2563917
 	// Construct text
-	var/static/regex/html_metachars = new(@"&[A-Za-z]{1,7};", "g")
-	var/complete_text = "<span class='center maptext [extra_classes.Join(" ")]' style='color: [tgt_color]; font-size:[font_size]pt; font-family:\"Pterra\"; text-shadow:0 0 5px #000,0 0 5px #000,0 0 5px #000,0 0 5px #000;'>[text]</span>"
-
+	var/static/regex/html_metachars = new(@"&[A-Za-zА-Яа-я]{1,7};", "g")
+	var/complete_text = "<span class='center maptext [extra_classes.Join(" ")]' style='color: [tgt_color]; font-size:[font_size]pt; font-family:\"Mookmania\"; text-shadow:0 0 5px #000,0 0 5px #000,0 0 5px #000,0 0 5px #000;'>[text]</span>"
 	var/mheight
 	WXH_TO_HEIGHT(owned_by.MeasureText(complete_text, null, CHAT_MESSAGE_WIDTH), mheight)
 	if(!VERB_SHOULD_YIELD)
@@ -222,7 +227,7 @@
 		return
 
 	var/text
-	if(spans.Find("emote"))
+	if(spans.Find("emote") || spans.Find("mindlink"))
 		text = raw_message
 	else
 		text = lang_treat(speaker, message_language, raw_message, spans, null, TRUE)

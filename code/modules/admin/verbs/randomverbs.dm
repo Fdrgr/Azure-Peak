@@ -108,7 +108,7 @@
 
 	if (!msg)
 		return
-	
+
 	M.adjust_triumphs(msg)
 	log_text = "by [msg], from [old_triumphs] to [old_triumphs + msg]"
 
@@ -132,7 +132,7 @@
 
 	if(!amt)
 		return
-	
+
 	prompt = "Please specify a reason for the adjustment:"
 	reason = input("Message:", prompt) as text|null
 	if(!reason)
@@ -247,6 +247,9 @@
 		if(MUTE_DEADCHAT)
 			mute_string = "deadchat and DSAY"
 			feedback_string = "Deadchat"
+		if(MUTE_MEDITATE)
+			mute_string = "meditate"
+			feedback_string = "Meditate"
 		if(MUTE_ALL)
 			mute_string = "everything"
 			feedback_string = "Everything"
@@ -567,7 +570,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 
 /client/proc/cmd_admin_gib_self()
 	set name = "Gibself"
-	set category = "-Fun-"
+	set category = "-GameMaster-"
 
 	var/confirm = alert(src, "You sure?", "Confirm", "Yes", "No")
 	if(confirm == "Yes")
@@ -651,7 +654,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 
 
 /client/proc/run_weather()
-	set category = "-Fun-"
+	set category = "-GameMaster-"
 	set name = "Run Weather"
 	set desc = ""
 	set hidden = 1 //Replaced by particle weather
@@ -716,7 +719,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 
 /client/proc/smite(mob/living/target as mob)
 	set name = "Smite"
-	set category = "-Fun-"
+	set category = "-GameMaster-"
 	if(!check_rights(R_ADMIN) || !check_rights(R_FUN))
 		return
 	var/static/list/punishment_list = list(
@@ -731,6 +734,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 		ADMIN_PUNISHMENT_CRIPPLE,
 		ADMIN_PUNISHMENT_PSYDON,
 		ADMIN_PUNISHMENT_DIVINE_WRATH,
+		ADMIN_PUNISHMENT_CHANDELIER,
 	)
 
 	var/punishment = input("Choose a punishment", "DIVINE SMITING") as null|anything in sortList(punishment_list)
@@ -751,19 +755,19 @@ Traitors and the like can also be revived with the previous role mostly intact.
 		if(ADMIN_PUNISHMENT_BRAINDAMAGE)
 			target.adjustOrganLoss(ORGAN_SLOT_BRAIN, 199, 199)
 		if(ADMIN_PUNISHMENT_PSYDON)
-			sleep(60)
+			stoplag(6 SECONDS)
 			target.psydo_nyte()
 			target.playsound_local(target, 'sound/misc/psydong.ogg', 100, FALSE)
-			sleep(20)
+			stoplag(2 SECONDS)
 			target.psydo_nyte()
 			target.playsound_local(target, 'sound/misc/psydong.ogg', 100, FALSE)
-			sleep(15)
+			stoplag(1.5 SECONDS)
 			target.psydo_nyte()
 			target.playsound_local(target, 'sound/misc/psydong.ogg', 100, FALSE)
-			sleep(10)
+			stoplag(1 SECONDS)
 			target.gib(FALSE)
 		if(ADMIN_PUNISHMENT_GIB)
-			target.gib(FALSE)	
+			target.gib(FALSE)
 		if(ADMIN_PUNISHMENT_BSA)
 			bluespace_artillery(target)
 		if(ADMIN_PUNISHMENT_CBT)
@@ -805,7 +809,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 			direction = directions[direction]
 			var/target_tile = target.loc
 			for (var/i = 0; i < 10; i++)
-				var/turf/next_tile = get_step(target_tile, direction) 
+				var/turf/next_tile = get_step(target_tile, direction)
 				if (!next_tile)
 					break
 				target_tile = next_tile
@@ -830,7 +834,7 @@ Traitors and the like can also be revived with the previous role mostly intact.
 			humie.add_stress(/datum/stressevent/maniac_woke_up)
 			to_chat(humie, span_deadsay("<span class='reallybig'>... WHERE AM I? ...</span>"))
 			var/static/list/slop_lore = list(
-				span_deadsay("... Azure Peak? No ... It doesn't exist ..."),
+				span_deadsay("... Twilight Axis? No ... It doesn't exist ..."),
 				span_deadsay("... My name is Trey. Trey Liam, Liamtific Troverseer ..."),
 				span_deadsay("... I'm on NT Liam, a self Treystaining ship, used to Treyserve what Liamains of roguemanity ..."),
 				span_deadsay("... Launched into the Grim Darkness, War and Grim Darkness preserves their grimness ... Their edge ..."),
@@ -847,6 +851,22 @@ Traitors and the like can also be revived with the previous role mostly intact.
 				to_chat(usr,span_warning("Target must be human!"))
 				return
 			divine_wrath(target)
+		if(ADMIN_PUNISHMENT_CHANDELIER)
+			if(!ishuman(target))
+				to_chat(usr,span_warning("Target must be human!"))
+				return
+
+			var/mob/living/carbon/human/humie = target
+			var/obj/item/bodypart/affecting = humie.get_bodypart(BODY_ZONE_HEAD)
+			if(!affecting)
+				to_chat(usr,span_warning("Target must have a head!"))
+				return
+
+			var/obj/machinery/light/rogue/chand/chandelier = new /obj/machinery/light/rogue/chand(get_turf(humie))
+			chandelier.layer = ABOVE_MOB_LAYER
+			playsound(get_turf(humie), 'sound/combat/hits/blunt/frying_pan(4).ogg', 100, FALSE)
+			affecting.add_wound(/datum/wound/fracture/head)
+			humie.visible_message(span_userdanger("There is a sickening CRUNCH as a chandelier crashes down onto [humie]!"))
 	punish_log(target, punishment)
 
 /client/proc/punish_log(whom, punishment)

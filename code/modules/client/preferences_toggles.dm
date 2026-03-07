@@ -95,7 +95,7 @@
 
 /client/verb/toggle_compliance_notifs() // The messages need to be on-by-default while this is in its early stages.
 	set category = "Options"
-	set name = "Compliance Notifs"
+	set name = "Toggle Compliance Notifs"
 	if(prefs)
 		prefs.compliance_notifs = !prefs.compliance_notifs
 		prefs.save_preferences()
@@ -195,26 +195,72 @@
 	set category = "Options"
 	set desc = ""
 	if(prefs)
-		prefs.toggles ^= CMODE_STRIPPING
+		prefs.combat_toggles ^= CMODE_STRIPPING
 		prefs.save_preferences()
-	to_chat(src, "You will [prefs.toggles & CMODE_STRIPPING ? "" : "not"] be able to open the strip menu in combat mode.")
+	to_chat(src, "You will [prefs.combat_toggles & CMODE_STRIPPING ? "" : "not"] be able to open the strip menu in combat mode.")
+
+/client/verb/antighost()
+	set name = "Toggle Antighost"
+	set category = "Options"
+	set desc = ""
+	if(prefs)
+		prefs.ghost_toggles ^= TOGGLE_ANTIGHOST
+		prefs.save_preferences()
+	to_chat(src, "You are currently[prefs.ghost_toggles & TOGGLE_ANTIGHOST ? " not" : ""] orbitable.")
+
+/client/verb/mood_messages_in_chat()
+	set category = "Options"
+	set name = "Toggle Mood Messages"
+
+	if(prefs)
+		prefs.chat_toggles ^= CHAT_MOODMESSAGES
+		prefs.save_preferences()
+
+	to_chat(src, "You will[prefs.chat_toggles & CHAT_MOODMESSAGES ? "" : " not"] see all mood messages \
+	in your chat. Sufficiently severe mood messages are shown in chat regardless of this toggle.")
+
+/client/verb/attack_blip_frequency()
+	set category = "Options"
+	set name = "Change Attack Sound Frequency"
+
+	var/choice = input(src, "How often do you wish to hear your character emote on successful hits?", "ATTACK NOISE FREQUENCY") as null|anything in GLOB.attack_blip_pref_list
+	if(!choice)
+		return
+
+	if(choice && prefs)
+		prefs.attack_blip_frequency = GLOB.attack_blip_pref_list[choice]
+		prefs.save_preferences()
+
+	var/text = choice
+	if(choice == "Half the time (Default)")
+		text = "Half the time"
+
+	to_chat(src, "Your character will [text] voice their successful attacks.")
 
 /client/verb/toggle_xptext() // Whether the user can see the balloon XP pop ups.
 	set category = "Options"
 	set name = "Toggle XP Text"
 	if(prefs)
-		prefs.floating_text_toggles ^= XP_TEXT
+		prefs.combat_toggles ^= XP_TEXT
 		prefs.save_preferences()
-	to_chat(src, "You will[prefs.floating_text_toggles & XP_TEXT ? "" : " not"] see XP pop ups.")
+	to_chat(src, "You will[prefs.combat_toggles & XP_TEXT ? "" : " not"] see XP pop ups.")
+
+/client/verb/toggle_hitzonetext() // Whether the user can see a text popup for where they got hit.
+	set category = "Options"
+	set name = "Toggle Hitzone Text"
+	if(prefs)
+		prefs.combat_toggles ^= HITZONE_TEXT
+		prefs.save_preferences()
+	to_chat(src, "You will[prefs.combat_toggles & HITZONE_TEXT ? "" : " not"] see floating text for where you were hit.")
 
 /client/verb/toggle_floatingtext() // Whether the user can see the balloon pop ups at all.
 	set category = "Options"
 	set name = "Toggle Floating Text"
 	if(prefs)
-		prefs.floating_text_toggles ^= FLOATING_TEXT
+		prefs.combat_toggles ^= FLOATING_TEXT
 		prefs.save_preferences()
-	to_chat(src, "You will [prefs.floating_text_toggles & FLOATING_TEXT ? "see" : "not see any"] floating text.")
-
+	to_chat(src, "You will [prefs.combat_toggles & FLOATING_TEXT ? "see" : "not see any"] floating text.")
+/*
 /client/verb/toggle_deadchat() // Whether the user can see DSAY or not.
 	set name = "Show/Hide Deadchat"
 	set category = "Options"
@@ -226,7 +272,7 @@
 	to_chat(src, "You will [(prefs.chat_toggles & CHAT_DSAY) ? "now" : "no longer"] see deadchat.")
 	if(holder)
 		SSblackbox.record_feedback("nested tally", "admin_toggle", 1, list("Toggle Deadchat Visibility", "[prefs.chat_toggles & CHAT_DSAY ? "Enabled" : "Disabled"]"))
-
+*/
 /*
 //toggles
 /datum/verbs/menu/Settings/Ghost/chatterbox
@@ -633,6 +679,17 @@ GLOBAL_LIST_INIT(ghost_orbits, list(GHOST_ORBIT_CIRCLE,GHOST_ORBIT_TRIANGLE,GHOS
 	prefs.save_preferences()
 	to_chat(usr, "You will [(prefs.chat_toggles & CHAT_RADIO) ? "now" : "no longer"] see radio chatter from nearby radios or speakers")
 	SSblackbox.record_feedback("nested tally", "admin_toggle", 1, list("Toggle Radio Chatter", "[prefs.chat_toggles & CHAT_RADIO ? "Enabled" : "Disabled"]")) //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
+
+/client/proc/deadchat()
+	set name = "Show/Hide Deadchat"
+	set category = "Prefs - Admin"
+	set desc ="Toggles seeing deadchat"
+	if(!holder)
+		return
+	prefs.chat_toggles ^= CHAT_DEAD
+	prefs.save_preferences()
+	to_chat(src, "You will [(prefs.chat_toggles & CHAT_DEAD) ? "now" : "no longer"] see deadchat.")
+	SSblackbox.record_feedback("nested tally", "admin_toggle", 1, list("Toggle Deadchat Visibility", "[prefs.chat_toggles & CHAT_DEAD ? "Enabled" : "Disabled"]")) //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 
 /client/proc/toggleprayers()
 	set name = "Show/Hide Prayers"

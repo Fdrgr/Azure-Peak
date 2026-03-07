@@ -5,7 +5,7 @@
 	desc = "Composite armour made according to an Etruscan tradition. It's a high-quality arched plate cuirass sewn with dyed leather and fitted with a wide skirt at the bottom to cover the groin."
 	icon_state = "brigandine"
 	blocksound = SOFTHIT
-	body_parts_covered = COVERAGE_ALL_BUT_LEGS
+	body_parts_covered = COVERAGE_ALL_BUT_HANDLEGS
 	armor = ARMOR_PLATE
 	allowed_sex = list(MALE, FEMALE)
 	nodismemsleeves = TRUE
@@ -17,22 +17,23 @@
 	sleeved_detail = FALSE
 	boobed_detail = FALSE
 	chunkcolor = "#7d9097"
+	material_category = ARMOR_MAT_PLATE
 
 /obj/item/clothing/suit/roguetown/armor/brigandine/Initialize()
 	. = ..()
-	AddComponent(/datum/component/item_equipped_movement_rustle, SFX_PLATE_COAT_STEP, 6)
+	AddComponent(/datum/component/item_equipped_movement_rustle, SFX_PLATE_COAT_STEP, 18)
 
 /obj/item/clothing/suit/roguetown/armor/brigandine/attack_right(mob/user)
 	if(detail_tag)
 		return
 	var/the_time = world.time
-	var/pickedcolor = input(user, "Select a color.","Brigandine Color") as null|anything in CLOTHING_COLOR_NAMES
+	var/pickedcolor = input(user, "Select a color.","Brigandine Color") as null|anything in COLOR_MAP
 	if(!pickedcolor)
 		return
 	if(world.time > (the_time + 30 SECONDS))
 		return
 	detail_tag = "_det"
-	detail_color = clothing_color2hex(pickedcolor)
+	detail_color = COLOR_MAP[pickedcolor]
 	update_icon()
 	if(ismob(loc))
 		var/mob/L = loc
@@ -66,49 +67,10 @@
 	GLOB.lordcolor -= src
 	return ..()
 
-/obj/item/clothing/suit/roguetown/armor/brigandine/coatplates
-	name = "coat of plates"
-	desc = "A leather coat with plates attached to increase protection while retaining mobility. The leather below might stop a dagger."
-	icon_state = "coat_of_plates"
-	blocksound = PLATEHIT
-	smelt_bar_num = 2
-	armor_class = ARMOR_CLASS_HEAVY
-	max_integrity = ARMOR_INT_CHEST_PLATE_BRIGANDINE + 50
-
-/obj/item/clothing/suit/roguetown/armor/brigandine/retinue/coat
-	name = "coat of the commander"
-	desc = "A thick boiled leather surcoat with enough plates concealed within the folds to offer superior protection. It weighs a ton and takes a great man to wear."
-	icon_state = "leathercoat"
-	item_state = "leathercoat"
-	var/picked = FALSE
-	sleeved_detail = TRUE
-	boobed_detail = TRUE
-
-/obj/item/clothing/suit/roguetown/armor/brigandine/retinue/coat/attack_right(mob/user)
-	if(picked)
-		return
-	var/the_time = world.time
-	var/pickedvalue = input(user, "Select a color", "KINGSLAYER'S GARB") as null|anything in list("Khaki", "Black")
-	if(!pickedvalue)
-		return
-	if(world.time > (the_time + 30 SECONDS))
-		return
-	if(pickedvalue == "Khaki")
-		picked = TRUE
-	else if(pickedvalue == "Black")
-		picked = TRUE
-		icon_state = "bleathercoat"
-		item_state = "bleathercoat"
-		update_icon()
-		if(ismob(loc))
-			var/mob/L = loc
-			L.update_inv_armor()
-
-
 /obj/item/clothing/suit/roguetown/armor/brigandine/light
 	slot_flags = ITEM_SLOT_ARMOR
 	name = "lightweight brigandine"
-	desc = "A light riveted coat with plates concealed inside an exterior fabric. Susceptible to daggers being shoved into your ribs."
+	desc = "A lightweight coat-of-plates, concealed underneath layers of dyeable leather. While more expensive than a traditional steel cuirass, it doesn't require a well-conditioned phyisque to comfortably don."
 	icon_state = "light_brigandine"
 	blocksound = SOFTHIT
 	body_parts_covered = COVERAGE_TORSO
@@ -119,17 +81,20 @@
 	armor_class = ARMOR_CLASS_LIGHT//steel version of the studded leather armor now
 	w_class = WEIGHT_CLASS_BULKY
 
+/obj/item/clothing/suit/roguetown/armor/brigandine/light/ComponentInitialize()
+	AddComponent(/datum/component/armour_filtering/negative, TRAIT_FENCERDEXTERITY)
+
 /obj/item/clothing/suit/roguetown/armor/brigandine/light/attack_right(mob/user)
 	if(detail_tag)
 		return
 	var/the_time = world.time
-	var/pickedcolor = input(user, "Select a color.","Brigandine Color") as null|anything in CLOTHING_COLOR_NAMES
+	var/pickedcolor = input(user, "Select a color.","Brigandine Color") as null|anything in COLOR_MAP
 	if(!pickedcolor)
 		return
 	if(world.time > (the_time + 30 SECONDS))
 		return
 	detail_tag = "_detail"
-	detail_color = clothing_color2hex(pickedcolor)
+	detail_color = COLOR_MAP[pickedcolor]
 	update_icon()
 	if(ismob(loc))
 		var/mob/L = loc
@@ -164,7 +129,21 @@
 
 /obj/item/clothing/suit/roguetown/armor/brigandine/captain
 	name = "captain's brigandine"
-	desc = "A coat with plates specifically tailored and forged for the captain of Azure."
+ 
+/obj/item/clothing/suit/roguetown/armor/brigandine/banneret
+	name = "knight banneret's brigandine"
+/obj/item/clothing/suit/roguetown/armor/brigandine/light/cult
+	name = "Cultistic's robe"
+	icon_state = "warlock"
+	body_parts_covered = COVERAGE_ALL_BUT_LEGS
+
+/obj/item/clothing/suit/roguetown/armor/brigandine/light/cult/Initialize(mapload, ...)
+	. = ..()
+	AddComponent(/datum/component/cursed_item, TRAIT_CABAL, "ROBE")
+
+/obj/item/clothing/suit/roguetown/armor/brigandine/captain
+	name = "captain's brigandine"
+	desc = "A resplendant coat-of-plates, gilded and veiled in dyeable silk. Only the finest of Azuria's Knights has been entrusted with this beautiful article."
 	icon_state = "capplate"
 	icon = 'icons/roguetown/clothing/special/captain.dmi'
 	mob_overlay_icon = 'icons/roguetown/clothing/special/onmob/captain.dmi'
@@ -193,8 +172,8 @@
 /obj/item/clothing/suit/roguetown/armor/brigandine/haraate/attack_right(mob/user)
 	..()
 	if(!picked)
-		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in colorlist
-		var/playerchoice = colorlist[choice]
+		var/choice = input(user, "Choose a color.", "Uniform colors") as anything in COLOR_MAP
+		var/playerchoice = COLOR_MAP[choice]
 		picked = TRUE
 		detail_color = playerchoice
 		detail_tag = "_detail"

@@ -9,6 +9,10 @@
 	standard 0 if fail
 */
 /mob/living/proc/apply_damage(damage = 0, damagetype = BRUTE, def_zone = null, blocked = 0, forced = FALSE, spread_damage = FALSE)
+
+	if(HAS_TRAIT(src, "ethereal") && !forced) //TA EDIT
+		return 0
+	
 	SEND_SIGNAL(src, COMSIG_MOB_APPLY_DAMGE, damage, damagetype, def_zone)
 	var/hit_percent = 1
 	damage = max(damage-blocked,0)
@@ -157,8 +161,6 @@
 	bruteloss = CLAMP((bruteloss + (amount * CONFIG_GET(number/damage_multiplier))), 0, maxHealth * 2)
 	. -= bruteloss
 
-	if (!.)
-		return FALSE
 
 	if(updating_health)
 		updatehealth()
@@ -178,9 +180,6 @@
 	. = oxyloss
 	oxyloss = CLAMP((oxyloss + (amount * CONFIG_GET(number/damage_multiplier))), 0, maxHealth * 2)
 	. -= oxyloss
-
-	if (!.)
-		return FALSE
 
 	if(updating_health)
 		updatehealth()
@@ -204,9 +203,6 @@
 	. = toxloss
 	toxloss = CLAMP((toxloss + (amount * CONFIG_GET(number/damage_multiplier))), 0, maxHealth * 2)
 	. -= toxloss
-
-	if (!.)
-		return FALSE
 
 	if(updating_health)
 		updatehealth()
@@ -249,8 +245,6 @@
 	cloneloss = CLAMP((cloneloss + (amount * CONFIG_GET(number/damage_multiplier))), 0, maxHealth * 2)
 	. -= cloneloss
 
-	if (!.)
-		return FALSE
 
 	if(updating_health)
 		updatehealth()

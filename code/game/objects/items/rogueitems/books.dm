@@ -3,7 +3,7 @@
 	icon = 'icons/roguetown/items/books.dmi'
 	icon_state = "basic_book_0"
 	slot_flags = ITEM_SLOT_HIP
-	var/base_icon_state = "basic_book"
+	base_icon_state = "basic_book"
 	unique = TRUE
 	firefuel = 5 MINUTES
 	dropshrink = 0.6
@@ -236,6 +236,12 @@
 		else
 			to_chat(user, span_info("It has already been blessed."))
 			return
+
+/obj/item/book/rogue/bibble/get_mechanics_examine(mob/user)
+    . = ..()
+    . += span_info("Exclusive to the Bishop is the ability to anoint items and people, by left-clicking the chosen recipient.")
+    . += span_info("Anointing a silver weapon will bless it, greatly increasing the power of its critical hits and debuffs against sunderable opponents.")
+    . += span_info("Anointing a person will bless them, imparting a temporary bonus to their Fortune.")
 
 /obj/item/book/rogue/bibble/psy
 	name = "Tome of Psydon"

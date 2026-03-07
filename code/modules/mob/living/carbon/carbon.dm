@@ -108,7 +108,8 @@
 	// Special case for scissors with snip intent targeting the head or skull
 	if(istype(I, /obj/item/rogueweapon/huntingknife/scissors) && user.used_intent.type == /datum/intent/snip && (user.zone_selected == BODY_ZONE_HEAD || user.zone_selected == BODY_ZONE_PRECISE_SKULL))
 		return I.attack(src, user)
-
+	if(istype(I, /obj/item/leash))
+		return I.attack(src, user)
 	if(!user.cmode)
 		var/try_to_fail = istype(user.rmb_intent, /datum/rmb_intent/strong)
 		var/list/possible_steps = list()
@@ -258,6 +259,10 @@
 				to_chat(src, "<span class='notice'>I set [I] down gently on the ground.</span>")
 				return
 
+			if(I.throwforce && rogue_sneaking)
+				mob_timers[MT_FOUNDSNEAK] = world.time
+				update_sneak_invis(reset = TRUE)
+
 
 	if(thrown_thing)
 		if(!thrown_speed)
@@ -399,6 +404,17 @@
 	if(!has_status_effect(/datum/status_effect/fire_handler))
 		extinguish_mob(TRUE)
 
+/mob/living/carbon/resist_leash()
+	to_chat(src, span_notice("I reach for the hook on my collar..."))
+	//Determine how long it takes to remove the leash
+	var/deleash = 15
+	if(src.handcuffed)
+		deleash = 60
+	if(move_after(src, deleash, 0, target = src))
+		if(!QDELETED(src))
+			to_chat(src, "<span class='warning'>[src] has removed their leash!</span>")
+			src.remove_status_effect(/datum/status_effect/leash_pet)
+
 /mob/living/carbon/resist_restraints()
 	var/obj/item/I = null
 	var/type = 0
@@ -494,8 +510,18 @@
 		if(has_status_effect(/datum/status_effect/debuff/netted))
 			remove_status_effect(/datum/status_effect/debuff/netted)
 
-	if(cuff_break)
-		. = !((I == handcuffed) || (I == legcuffed))
+	if(cuff_break) //TA EDIT
+		if(I == handcuffed)
+			handcuffed = null
+			update_handcuffed()
+			
+		if(I == legcuffed)
+			legcuffed = null
+			update_inv_legcuffed()
+
+			if(has_status_effect(/datum/status_effect/debuff/netted))
+				remove_status_effect(/datum/status_effect/debuff/netted)
+		
 		qdel(I)
 		return TRUE
 
@@ -581,7 +607,7 @@
 
 /mob/living/carbon
 	var/nausea = 0
-	var/bleeding_tier = 0 
+	var/bleeding_tier = 0
 
 /mob/living/carbon/proc/add_nausea(amt)
 	nausea = clamp(nausea + amt, 0, 300)
@@ -842,7 +868,10 @@
 
 	if(HAS_TRAIT(src, TRAIT_ZIZOSIGHT))
 		lighting_alpha = min(lighting_alpha, LIGHTING_PLANE_ALPHA_ZIZOVISION)
-		see_in_dark = max(see_in_dark, 8)
+		see_in_dark = max(see_in_dark, 14)
+	if(HAS_TRAIT(src, TRAIT_ZIZOEYES))
+		lighting_alpha = min(lighting_alpha, LIGHTING_PLANE_ALPHA_ZIZOVISION)
+		see_in_dark = max(see_in_dark, 15)
 
 	if(see_override)
 		see_invisible = see_override
@@ -879,7 +908,7 @@
 
 /mob/living/carbon/get_permeability_protection(list/target_zones = list(HANDS,CHEST,GROIN,LEGS,FEET,ARMS,HEAD))
 	var/list/tally = list()
-	for(var/obj/item/I in get_equipped_items())
+	for(var/obj/item/I as anything in get_equipped_items())
 		for(var/zone in target_zones)
 			if(I.body_parts_covered & zone)
 				tally["[zone]"] = max(1 - I.permeability_coefficient, target_zones["[zone]"])
@@ -888,6 +917,9 @@
 		protection += tally[key]
 	protection *= INVERSE(target_zones.len)
 	return protection
+
+/mob/living
+	var/succumb_timer = 0
 
 //this handles hud updates
 /mob/living/carbon/update_damage_hud()
@@ -940,17 +972,18 @@
 			overlay_fullscreen("critvision", /atom/movable/screen/fullscreen/crit/vision, visionseverity)
 		else
 			clear_fullscreen("critvision")
+		if(!succumb_timer)
+			succumb_timer = world.time
 		overlay_fullscreen("crit", /atom/movable/screen/fullscreen/crit, severity)
 		overlay_fullscreen("DD", /atom/movable/screen/fullscreen/crit/death)
 		overlay_fullscreen("DDZ", /atom/movable/screen/fullscreen/crit/zeth)
 	else
+		if(succumb_timer)
+			succumb_timer = 0
 		clear_fullscreen("crit")
 		clear_fullscreen("critvision")
 		clear_fullscreen("DD")
 		clear_fullscreen("DDZ")
-	if(hud_used)
-		if(hud_used.stressies)
-			hud_used.stressies.update_icon()
 //	if(blood_volume <= 0)
 //		overlay_fullscreen("DD", /atom/movable/screen/fullscreen/crit/death)
 //	else
@@ -1106,8 +1139,7 @@
 		reagents.clear_reagents()
 		for(var/addi in reagents.addiction_list)
 			reagents.remove_addiction(addi)
-	for(var/O in internal_organs)
-		var/obj/item/organ/organ = O
+	for(var/obj/item/organ/organ as anything in internal_organs)
 		organ.setOrganDamage(0)
 	var/obj/item/organ/brain/B = getorgan(/obj/item/organ/brain)
 	if(B)
@@ -1147,8 +1179,7 @@
 	if(QDELETED(src))
 		return
 	var/organs_amt = 0
-	for(var/X in internal_organs)
-		var/obj/item/organ/O = X
+	for(var/obj/item/organ/O as anything in internal_organs)
 		if(prob(50))
 			organs_amt++
 			O.Remove(src)
@@ -1158,8 +1189,7 @@
 
 /mob/living/carbon/extinguish_mob(itemz = TRUE)
 	if(itemz)
-		for(var/X in get_equipped_items())
-			var/obj/item/I = X
+		for(var/obj/item/I as anything in get_equipped_items())
 			if(I.extinguishable)
 				I.extinguish() //extinguishes our clothes
 			I.acid_level = 0 //washes off the acid on our clothes
@@ -1203,8 +1233,7 @@
 		I.Insert(src)
 
 /mob/living/carbon/proc/update_disabled_bodyparts()
-	for(var/B in bodyparts)
-		var/obj/item/bodypart/BP = B
+	for(var/obj/item/bodypart/BP as anything in bodyparts)
 		BP.update_disabled()
 
 /mob/living/carbon/vv_get_dropdown()
@@ -1227,13 +1256,13 @@
 			return
 		var/list/limb_list = list()
 		if(edit_action == "remove" || edit_action == "augment")
-			for(var/obj/item/bodypart/B in bodyparts)
+			for(var/obj/item/bodypart/B as anything in bodyparts)
 				limb_list += B.body_zone
 			if(edit_action == "remove")
 				limb_list -= BODY_ZONE_CHEST
 		else
 			limb_list = list(BODY_ZONE_HEAD, BODY_ZONE_L_ARM, BODY_ZONE_R_ARM, BODY_ZONE_L_LEG, BODY_ZONE_R_LEG)
-			for(var/obj/item/bodypart/B in bodyparts)
+			for(var/obj/item/bodypart/B as anything in bodyparts)
 				limb_list -= B.body_zone
 		var/result = input(usr, "Please choose which body part to [edit_action]","[capitalize(edit_action)] Body Part") as null|anything in sortList(limb_list)
 		if(result)
@@ -1343,6 +1372,16 @@
 	if(istype(loc, /turf/open/water) && !(mobility_flags & MOBILITY_STAND))
 		return FALSE
 
+/mob/living/carbon/resist_leash()
+	to_chat(src, span_notice("I reach for the hook on my collar..."))
+	//Determine how long it takes to remove the leash
+	var/deleash = 5 SECONDS
+	if(src.handcuffed)
+		deleash = 20 SECONDS
+	if(move_after(src, deleash, 0, target = src))
+		if(!QDELETED(src))
+			to_chat(src, "<span class='warning'>[src] has removed their leash!</span>")
+			src.remove_status_effect(/datum/status_effect/leash_pet)
 
 /mob/living/carbon/can_buckle()
 	if((cmode) && (mind) && (!handcuffed) && (stat == CONSCIOUS))

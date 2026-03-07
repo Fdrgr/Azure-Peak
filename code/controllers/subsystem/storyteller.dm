@@ -237,7 +237,7 @@ SUBSYSTEM_DEF(gamemode)
 /datum/controller/subsystem/gamemode/fire(resumed = FALSE)
 	if(last_devotion_check < world.time)
 		pick_most_influential()
-		last_devotion_check = world.time + 90 MINUTES
+		last_devotion_check = world.time + 45 MINUTES
 
 	if(SSticker.HasRoundStarted() && (world.time - SSticker.round_start_time) >= ROUNDSTART_VALID_TIMEFRAME)
 		can_run_roundstart = FALSE
@@ -731,6 +731,7 @@ SUBSYSTEM_DEF(gamemode)
 		var/datum/storyteller/storyboy = storytellers[storyteller_type]
 		if(findtext(html_contaminated, storyboy.name))
 			selected_storyteller = storyboy.type
+			SSgnoll_scaling.get_gnoll_scaling() // Calling this here as to make sure scaling holds true as per the roundstart vote, not a latejoin hunted character joining.
 			break
 
 	var/datum/storyteller/storytypecasted = selected_storyteller
@@ -1162,11 +1163,16 @@ SUBSYSTEM_DEF(gamemode)
         STATS_VAMPIRES,
         STATS_DEADITES_ALIVE,
         STATS_CLINGY_PEOPLE,
+		STATS_BEAUTIFUL_PEOPLE,
+		STATS_MARRIAGES_MADE,
         STATS_ALCOHOLICS,
         STATS_JUNKIES,
-		STATS_KLEPTOMANIACS,
+		STATS_VOYEURS,
+		STATS_NYMPHOMANIACS,
+		STATS_INDEBTED,
+		STATS_THRILLSEEKERS,
         STATS_GREEDY_PEOPLE,
-        STATS_PLEASURES,
+        //STATS_PLEASURES, TA addition - New ERP SYSTEM
         STATS_MALE_POPULATION,
         STATS_FEMALE_POPULATION,
         STATS_OTHER_GENDER,
@@ -1178,6 +1184,7 @@ SUBSYSTEM_DEF(gamemode)
         STATS_ALIVE_DARK_ELVES,
         STATS_ALIVE_WOOD_ELVES,
         STATS_ALIVE_HALF_ELVES,
+		STATS_ALIVE_SUN_ELVES,
         STATS_ALIVE_HALF_ORCS,
         STATS_ALIVE_GOBLINS,
         STATS_ALIVE_KOBOLDS,
@@ -1193,7 +1200,8 @@ SUBSYSTEM_DEF(gamemode)
         STATS_ALIVE_TABAXI,
         STATS_ALIVE_VULPS,
         STATS_ALIVE_LUPIANS,
-        STATS_ALIVE_MOTHS
+        STATS_ALIVE_MOTHS,
+        STATS_ALIVE_AURA
 	)
 
 	for(var/stat_name in statistics_to_clear)
@@ -1210,7 +1218,6 @@ SUBSYSTEM_DEF(gamemode)
 	var/lowest_intelligence
 	var/lowest_speed
 	var/lowest_luck
-
 
 	for(var/client/client in GLOB.clients)
 		if(roundstart)
@@ -1245,11 +1252,7 @@ SUBSYSTEM_DEF(gamemode)
 			switch(human_mob.pronouns)
 				if(HE_HIM)
 					record_round_statistic(STATS_MALE_POPULATION)
-				if(HE_HIM_F)
-					record_round_statistic(STATS_MALE_POPULATION)
 				if(SHE_HER)
-					record_round_statistic(STATS_FEMALE_POPULATION)
-				if(SHE_HER_M)
 					record_round_statistic(STATS_FEMALE_POPULATION)
 				else
 					record_round_statistic(STATS_OTHER_GENDER)
@@ -1262,22 +1265,30 @@ SUBSYSTEM_DEF(gamemode)
 					record_round_statistic(STATS_ELDERLY_POPULATION)
 			if(human_mob.is_noble())
 				record_round_statistic(STATS_ALIVE_NOBLES)
-			if(human_mob.mind.assigned_role in GLOB.garrison_positions)
+			if((human_mob.mind.assigned_role in GLOB.garrison_positions) || (human_mob.mind.assigned_role in GLOB.retinue_positions) || (human_mob.mind.assigned_role in GLOB.citywatch_positions) || (human_mob.mind.assigned_role in GLOB.vanguard_positions))
 				record_round_statistic(STATS_ALIVE_GARRISON)
 			if(human_mob.mind.assigned_role in GLOB.church_positions)
 				record_round_statistic(STATS_ALIVE_CLERGY)
-			if((human_mob.mind.assigned_role in GLOB.yeoman_positions) || (human_mob.mind.assigned_role in GLOB.peasant_positions) || (human_mob.mind.assigned_role in GLOB.mercenary_positions))
+			if((human_mob.mind.assigned_role in GLOB.burgher_positions) || (human_mob.mind.assigned_role in GLOB.peasant_positions))
 				record_round_statistic(STATS_ALIVE_TRADESMEN)
-			if(human_mob.has_flaw(/datum/charflaw/clingy))
-				record_round_statistic(STATS_CLINGY_PEOPLE)
 			if(human_mob.has_flaw(/datum/charflaw/addiction/alcoholic))
 				record_round_statistic(STATS_ALCOHOLICS)
 			if(human_mob.has_flaw(/datum/charflaw/addiction/junkie))
 				record_round_statistic(STATS_JUNKIES)
-			if(human_mob.has_flaw(/datum/charflaw/addiction/kleptomaniac))
-				record_round_statistic(STATS_KLEPTOMANIACS)
+			if(human_mob.has_flaw(/datum/charflaw/addiction/lovefiend))
+				record_round_statistic(STATS_NYMPHOMANIACS)
+			if(human_mob.has_flaw(/datum/charflaw/indebted))
+				record_round_statistic(STATS_INDEBTED)
 			if(human_mob.has_flaw(/datum/charflaw/greedy))
 				record_round_statistic(STATS_GREEDY_PEOPLE)
+			if(human_mob.has_flaw(/datum/charflaw/clingy))
+				record_round_statistic(STATS_CLINGY_PEOPLE)
+			if(human_mob.has_flaw(/datum/charflaw/addiction/thrillseeker))
+				record_round_statistic(STATS_THRILLSEEKERS)
+			if(human_mob.has_flaw(/datum/charflaw/addiction/voyeur))
+				record_round_statistic(STATS_VOYEURS)
+			if(HAS_TRAIT(human_mob, TRAIT_BEAUTIFUL))
+				record_round_statistic(STATS_BEAUTIFUL_PEOPLE)
 
 			// Races - proper alive checking (We have so fucking many, kill me..)
 			if(ishumannorthern(human_mob))
@@ -1288,6 +1299,8 @@ SUBSYSTEM_DEF(gamemode)
 				record_round_statistic(STATS_ALIVE_DARK_ELVES)
 			if(iswoodelf(human_mob))
 				record_round_statistic(STATS_ALIVE_WOOD_ELVES)
+			if(issunelf(human_mob))
+				record_round_statistic(STATS_ALIVE_SUN_ELVES)
 			if(ishalfelf(human_mob))
 				record_round_statistic(STATS_ALIVE_HALF_ELVES)
 			if(ishalforc(human_mob))
@@ -1322,6 +1335,8 @@ SUBSYSTEM_DEF(gamemode)
 				record_round_statistic(STATS_ALIVE_LUPIANS)
 			if(ismoth(human_mob))
 				record_round_statistic(STATS_ALIVE_MOTHS)
+			if(isaura(human_mob))
+				record_round_statistic(STATS_ALIVE_AURA)
 
 			// Chronicle statistics
 			if(human_mob.STASTR > highest_strength)

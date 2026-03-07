@@ -7,6 +7,7 @@
 #define span_adminprefix(str) ("<span class='adminprefix'>" + str + "</span>")
 #define span_adminsay(str) ("<span class='adminsay'>" + str + "</span>")
 #define span_aiprivradio(str) ("<span class='aiprivradio'>" + str + "</span>")
+#define span_voyeurvice(str) ("<span class ='voyeurvice'>" + str + "</span>")
 #define span_alert(str) ("<span class='alert'>" + str + "</span>")
 #define span_alertalien(str) ("<span class='alertalien'>" + str + "</span>")
 #define span_alertsyndie(str) ("<span class='alertsyndie'>" + str + "</span>")
@@ -89,6 +90,7 @@
 #define span_linkon(str) ("<span class='linkon'>" + str + "</span>")
 #define span_looc(str) ("<span class='looc'>" + str + "</span>")
 #define span_love(str) ("<span class='love'>" + str + "</span>")
+#define span_lovebold(str) ("<span class='lovebold'>" + str + "</span>")
 #define span_marooned(str) ("<span class='marooned'>" + str + "</span>")
 #define span_medal(str) ("<span class='medal'>" + str + "</span>")
 #define span_medradio(str) ("<span class='medradio'>" + str + "</span>")
@@ -173,3 +175,8 @@
 /// Displays a tooltip. Accepts HTML. For the love of all that is holy, ensure input is trusted.
 /// * SPAN_LINKIFY doesn't work here.
 #define SPAN_TOOLTIP_DANGEROUS_HTML(tip, str) ("<span data-component=\"TooltipHTML\" data-html=\"[html_encode(tip)]\" class=\"tooltip\">[str]</span>")
+
+/* Complex Spans */
+// Ones where span_X isn't just the class
+
+#define span_admin_log(str) ("<span class='admin'><span class='prefix'>ADMIN LOG: </span><span class='message linkify'>" + str + "</span></span>")

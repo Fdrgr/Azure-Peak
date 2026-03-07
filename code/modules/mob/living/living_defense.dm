@@ -46,11 +46,69 @@
 /mob/living/proc/on_hit(obj/projectile/P)
 	return BULLET_ACT_HIT
 
+/// Checks if our Guard (clash) or parry buffer can deflect this projectile.
+/// Returns TRUE if deflected (caller should return early), FALSE otherwise.
+// Reactive spell defense - guard will deflect magical projectiles to add a measure of counterplay. It doesn't care whether it is a low value or a high value projectiles.
+// If deflectable, the guard is consumed cleanly and apply a 1 second buffer for multi-projectile spells (or extremely tightly timed barrage)
+// Non deflectable projectiles will fall through to disruption as normal, with the guard being consumed and applying a bad_guard penalty if applicable.
+/mob/living/proc/guard_deflect_projectile(obj/projectile/P)
+	if(!P.guard_deflectable)
+		return FALSE
+	var/datum/status_effect/buff/clash/guard = has_status_effect(/datum/status_effect/buff/clash)
+	if(guard)
+		if(P.on_guard_deflect(src))
+			apply_status_effect(/datum/status_effect/buff/parry_buffer)
+			remove_status_effect(/datum/status_effect/buff/clash)
+			return TRUE
+		return FALSE
+	if(has_status_effect(/datum/status_effect/buff/parry_buffer))
+		if(P.on_guard_deflect(src, silent = TRUE))
+			return TRUE
+	return FALSE
+
 /mob/living/bullet_act(obj/projectile/P, def_zone = BODY_ZONE_CHEST)
+
+	if(HAS_TRAIT(src, "ethereal"))//TA EDIT START
+		return BULLET_ACT_FORCE_PIERCE
+
+	if(HAS_TRAIT(src, TRAIT_MAGIC_SHIELD) && P.firer && P.firer != src)
+		var/obj/effect/proc_holder/spell/self/magic_shield/S
+		if(src.status_traits && src.status_traits[TRAIT_MAGIC_SHIELD])
+			for(var/source in src.status_traits[TRAIT_MAGIC_SHIELD])
+				if(istype(source, /obj/effect/proc_holder/spell/self/magic_shield))
+					S = source
+					break
+	
+		if(S && S.active)
+		
+			var/damage_cost = P.damage * S.stamina_damage_ratio
+		
+		
+			if(!src.stamina_add(damage_cost))
+				S.deactivate_shield(src, shattered = TRUE)
+			
+				return ..() 
+		
+		
+			src.visible_message(span_danger("[src.name]'s shield flares, reflecting [P.name] back at [P.firer]!"))
+			playsound(src.loc, 'sound/combat/parry/shield/magicshield (1).ogg', 50, TRUE)
+		
+		
+			var/new_angle = Get_Angle(src, P.firer)
+			new_angle += rand(-10, 10) 
+			P.setAngle(new_angle)
+
+			P.decayedRange = max(0, P.decayedRange - P.reflect_range_decrease)
+			P.range = P.decayedRange
+			P.permutated = list()
+			P.firer = src 
+
+			return BULLET_ACT_FORCE_PIERCE //TA EDIT END
+	
 	if(SEND_SIGNAL(src, COMSIG_ATOM_BULLET_ACT, P, def_zone) & COMPONENT_ATOM_BLOCK_BULLET)
 		return
 	def_zone = bullet_hit_accuracy_check(P.accuracy + P.bonus_accuracy, def_zone)
-	var/ap = (P.flag == "blunt") ? BLUNT_DEFAULT_PENFACTOR : P.armor_penetration
+	var/ap = (P.flag == "blunt") ? BLUNT_NO_PENFACTOR : P.armor_penetration // TA EDIT, prev. BLUNT_DEFAULT_PENFACTOR
 	var/armor = run_armor_check(def_zone, P.flag, "", "",armor_penetration = ap, damage = P.damage, used_weapon = P)
 
 	next_attack_msg.Cut()
@@ -116,6 +174,10 @@
 		return 0
 
 /mob/living/hitby(atom/movable/AM, skipcatch, hitpush = TRUE, blocked = FALSE, datum/thrownthing/throwingdatum, damage_flag = "blunt")
+	
+	if(HAS_TRAIT(src, "ethereal")) //TA EDIT
+		return FALSE 
+	
 	if(istype(AM, /obj/item))
 		var/obj/item/I = AM
 		// Hit the selected zone, or else a random zone centered on the chest
@@ -124,7 +186,7 @@
 		if(SEND_SIGNAL(src, COMSIG_LIVING_IMPACT_ZONE, I, zone) & COMPONENT_CANCEL_THROW)
 			return FALSE
 		if(!blocked)
-			var/ap = (damage_flag == "blunt") ? BLUNT_DEFAULT_PENFACTOR : I.armor_penetration
+			var/ap = (damage_flag == "blunt") ? BLUNT_NO_PENFACTOR : I.armor_penetration // TA EDIT, prev. BLUNT_DEFAULT_PENFACTOR
 			var/armor = run_armor_check(zone, damage_flag, "", "", armor_penetration = ap, damage = I.throwforce, used_weapon = I)
 			next_attack_msg.Cut()
 			var/nodmg = FALSE
@@ -275,7 +337,8 @@
 	if(user != src)
 		if(pulling != user) // If the person we're pulling aggro grabs us don't break the grab
 			stop_pulling()
-		user.set_pull_offsets(src, user.grab_state)
+		if(!is_shifted)
+			user.set_pull_offsets(src, user.grab_state)
 	log_combat(user, src, "grabbed", addition="aggressive grab[add_log]")
 	return 1
 
@@ -347,28 +410,28 @@
 	playsound(get_turf(M), pick(M.attack_sound), 100, FALSE)
 
 	var/cached_intent = M.used_intent
+	if(cached_intent)
+		sleep(M.used_intent.swingdelay)
+		M.swinging = FALSE
+		if(M.a_intent != cached_intent)
+			return FALSE
+		if(QDELETED(src) || QDELETED(M))
+			return FALSE
+		if(!M.CanReach(src)) // Possible performance hit.
+			return FALSE
+		if(M.incapacitated())
+			return FALSE
 
-	sleep(M.used_intent.swingdelay)
-	M.swinging = FALSE
-	if(M.a_intent != cached_intent)
-		return FALSE
-	if(QDELETED(src) || QDELETED(M))
-		return FALSE
-	if(!M.CanReach(src)) // Possible performance hit.
-		return FALSE
-	if(M.incapacitated())
-		return FALSE
+		if(checkmiss(M))
+			return FALSE
 
-	if(checkmiss(M))
-		return FALSE
+		if(checkdefense(M.a_intent, M))
+			return FALSE
 
-	if(checkdefense(M.a_intent, M))
-		return FALSE
+		if(M.attack_sound)
+			playsound(loc, M.a_intent.hitsound, 100, FALSE)
 
-	if(M.attack_sound)
-		playsound(loc, M.a_intent.hitsound, 100, FALSE)
-
-	log_combat(M, src, "attacked")
+		log_combat(M, src, "attacked")
 
 	return TRUE
 

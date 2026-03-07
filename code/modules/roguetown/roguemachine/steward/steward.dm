@@ -7,9 +7,13 @@
 #define TAB_STATISTICS 7
 #define TAB_PAYDAY 8
 
+#define TAB_INVESTMENTS 10
+
 /obj/structure/roguemachine/steward
 	name = "nerve master"
-	desc = "A magitech device connected to the royal treasury. Stewards can manage payroll by interacting with it."
+	desc = "A magitech device connected to the arteries of Azuria's royal treasury. When unlocked with the proper key, it can sway the fate of an entire kingdom's \
+	finances. Stewards traditionally use these machines to export stockpiled goods for coinage, to pay-and-tax all accounts registered through the MEISTER, and to \
+	import supplies for taskings-a-plenty."
 	icon = 'icons/roguetown/misc/machines.dmi'
 	icon_state = "steward_machine"
 	density = TRUE
@@ -24,7 +28,7 @@
 	var/total_deposit = 0
 	var/list/excluded_jobs = list("Wretch","Vagabond","Adventurer")
 	var/current_category = "Raw Materials"
-	var/list/categories = list("Raw Materials", "Fruit", "Vegetable", "Animal")
+	var/list/categories = list("Raw Materials", "Fruit", "Vegetable", "Animal","Seafood")
 	var/list/daily_payments = list() // Associative list: job name -> payment amount
 
 /obj/structure/roguemachine/steward/Initialize()
@@ -36,24 +40,43 @@
 //	For competence of life I will allow you,
 //	That lack of means enforce you not to evil:
 /obj/structure/roguemachine/steward/proc/setup_default_payments()
-	daily_payments["Sergeant"] = 40 //Garrison
-	daily_payments["Man at Arms"] = 30
-	daily_payments["Dungeoneer"] = 30
-	daily_payments["Warden"] = 30
-	daily_payments["Veteran"] = 20
-	daily_payments["Squire"] = 10
-	daily_payments["Seneschal"] = 40 //Manor-House
-	daily_payments["Servant"] = 20	
-	daily_payments["Head Physician"] = 20 //Doctors
-	daily_payments["Apothecary"] = 10
-	daily_payments["Court Magician"] = 40 //University
-	daily_payments["Archivist"] = 20
-	daily_payments["Magicians Associate"] = 10
+	if(SSmapping.config.map_name == "Rockhill")
+		daily_payments["Royal Guard Sergeant"] = 40
+		daily_payments["Court Physician"] = 20
+		daily_payments["Court Magician"] = 40 //University
+		daily_payments["Magicians Associate"] = 10
+		daily_payments["Archivist"] = 20
+		daily_payments["Royal Guard"] = 20
+		daily_payments["Town Sheriff"] = 35
+		daily_payments["Town Watch"] = 20
+		daily_payments["Overseer"] = 30
+		daily_payments["Vanguard"] = 10
+		daily_payments["Veteran"] = 20
+		daily_payments["Squire"] = 10
+		daily_payments["Seneschal"] = 40 //Manor-House
+		daily_payments["Servant"] = 20
+		daily_payments["Apothecary"] = 10
+		daily_payments["Mayor"] = 40
+		daily_payments["Bailiff"] = 10
+	else
+		daily_payments["Sergeant"] = 40 //Garrison
+		daily_payments["Man at Arms"] = 30
+		daily_payments["Warden"] = 30
+		daily_payments["Veteran"] = 20
+		daily_payments["Squire"] = 10
+		daily_payments["Seneschal"] = 40 //Manor-House
+		daily_payments["Servant"] = 20	
+		daily_payments["Head Physician"] = 20 //Doctors
+		daily_payments["Apothecary"] = 10
+		daily_payments["Court Magician"] = 40 //University
+		daily_payments["Archivist"] = 20
+		daily_payments["Magicians Associate"] = 10
+	
 
 /obj/structure/roguemachine/steward/attackby(obj/item/P, mob/user, params)
 	if(istype(P, /obj/item/roguekey))
 		var/obj/item/roguekey/K = P
-		if(K.lockid == keycontrol || istype(K, /obj/item/roguekey/lord)) //Master key
+		if(K.lockid == keycontrol || istype(K, /obj/item/roguekey/lord) || istype(K, /obj/item/roguekey/skeleton)) //Master key
 			locked = !locked
 			playsound(loc, 'sound/misc/beep.ogg', 100, FALSE, -1)
 			(locked) ? (icon_state = "steward_machine_off") : (icon_state = "steward_machine")
@@ -108,7 +131,7 @@
 		SStreasury.log_to_steward("-[amt] imported [D.name]")
 		record_round_statistic(STATS_STOCKPILE_IMPORTS_VALUE, amt)
 		if(amt >= 100) //Only announce big spending.
-			scom_announce("Azure Peak imports [D.name] for [amt] mammon.", )
+			scom_announce("[SSticker.realm_name] imports [D.name] for [amt] mammon.", ) //TA_EDIT
 		D.raise_demand()
 		addtimer(CALLBACK(src, PROC_REF(do_import), D.type), 10 SECONDS)
 	if(href_list["export"])
@@ -216,7 +239,7 @@
 				SStreasury.give_money_account(-newtax, A, "NERVE MASTER")
 				break
 	if(href_list["payroll"])
-		var/list/L = list(GLOB.noble_positions) + list(GLOB.garrison_positions) + list(GLOB.courtier_positions) + list(GLOB.church_positions) + list(GLOB.yeoman_positions) + list(GLOB.peasant_positions) + list(GLOB.youngfolk_positions) + list(GLOB.inquisition_positions)
+		var/list/L = list(GLOB.noble_positions) + list(GLOB.retinue_positions) + list(GLOB.garrison_positions) + list(GLOB.vanguard_positions) + list(GLOB.citywatch_positions) + list(GLOB.courtier_positions) + list(GLOB.church_positions) + list(GLOB.burgher_positions) + list(GLOB.peasant_positions) + list(GLOB.sidefolk_positions) + list(GLOB.inquisition_positions)
 		var/list/things = list()
 		for(var/list/category in L)
 			for(var/A in category)
@@ -240,7 +263,7 @@
 				record_round_statistic(STATS_WAGES_PAID)
 				SStreasury.give_money_account(amount_to_pay, H, "NERVE MASTER")
 	if(href_list["setdailypay"])
-		var/list/L = list(GLOB.noble_positions) + list(GLOB.garrison_positions) + list(GLOB.courtier_positions) + list(GLOB.church_positions) + list(GLOB.yeoman_positions) + list(GLOB.peasant_positions) + list(GLOB.youngfolk_positions) + list(GLOB.inquisition_positions)
+		var/list/L = list(GLOB.noble_positions) + list(GLOB.retinue_positions) + list(GLOB.garrison_positions) + list(GLOB.vanguard_positions) + list(GLOB.citywatch_positions) + list(GLOB.courtier_positions) + list(GLOB.church_positions) + list(GLOB.burgher_positions) + list(GLOB.peasant_positions) + list(GLOB.sidefolk_positions) + list(GLOB.inquisition_positions)
 		var/list/things = list()
 		for(var/list/category in L)
 			for(var/A in category)
@@ -299,6 +322,22 @@
 		compact = !compact
 	if(href_list["changecat"])
 		current_category = href_list["changecat"]
+	if(href_list["changeinterest"])
+		if(!usr.canUseTopic(src, BE_CLOSE) || locked)
+			return
+		var/new_interest = input(usr, "Set daily interest rate (0-10%)", src, SStreasury.bank_interest_rate * 100) as null|num
+		if(isnull(new_interest))
+			return
+		if(!usr.canUseTopic(src, BE_CLOSE) || locked)
+			return
+		if(new_interest < 0 || new_interest > 10)
+			say("Interest rate must be between 0% and 10%.")
+			return
+		new_interest = round(new_interest * 10) / 10 // Round to one decimal place
+		SStreasury.bank_interest_rate = new_interest * 0.01
+		say("Daily interest rate set to [new_interest]%.")
+		SStreasury.log_to_steward("Interest rate changed to [new_interest]%")
+		scom_announce("Interest rates have been set to [new_interest]%.", )
 	if(href_list["changeautoexport"])
 		if(!usr.canUseTopic(src, BE_CLOSE) || locked)
 			return
@@ -312,6 +351,14 @@
 			return
 		new_autoexport = round(new_autoexport)
 		SStreasury.autoexport_percentage = new_autoexport * 0.01
+
+	if(href_list["buy_investment"])
+		if(SSinvestments.purchase_investment(locate(href_list["buy_investment"])))
+			say("Инвестиция произведена!")
+			playsound(src, 'sound/misc/machineyes.ogg', 100, FALSE, -1)
+		else 
+			say("Недостаточно денег в казне")
+			playsound(src, 'sound/misc/machineno.ogg', 100, FALSE, -1)
 	
 	return attack_hand(usr)
 
@@ -360,6 +407,8 @@
 			contents += "<a href='?src=\ref[src];switchtab=[TAB_PAYDAY]'>\[Daily Payments\]</a><BR>"
 			contents += "<a href='?src=\ref[src];switchtab=[TAB_LOG]'>\[Log\]</a><BR>"
 			contents += "<a href='?src=\ref[src];switchtab=[TAB_STATISTICS]'>\[Statistics\]</a><BR>"
+			contents += "<BR>"
+			contents += "<a href='?src=\ref[src];switchtab=[TAB_INVESTMENTS]'>\[Инвестиции\]</a><BR>"
 			contents += "</center>"
 		if(TAB_BANK)
 			var/total_deposit = 0
@@ -372,7 +421,8 @@
 			contents += "<center>Bank<BR>"
 			contents += "--------------<BR>"
 			contents += "Treasury: [SStreasury.treasury_value]m<BR>"
-			contents += "Reserve Ratio: [round(SStreasury.treasury_value / total_deposit * 100)]%</center><BR>"
+			contents += "Reserve Ratio: [round(SStreasury.treasury_value / total_deposit * 100)]%<BR>"
+			contents += "Daily Interest: <a href='?src=\ref[src];changeinterest=1'>[SStreasury.bank_interest_rate * 100]%</a> (Cap: [SStreasury.bank_interest_cap]m)</center><BR>"
 			contents += "<a href='?src=\ref[src];payroll=1'>\[Pay by Class\]</a><BR><BR>"
 			if(compact)
 				for(var/mob/living/carbon/human/A in SStreasury.bank_accounts)
@@ -529,6 +579,73 @@
 			else
 				contents += "<center>No daily payments configured.</center><BR>"
 
+		if(TAB_INVESTMENTS)
+			contents += "<a href='?src=\ref[src];switchtab=[TAB_MAIN]'>\[Return\]</a>"
+			contents += "<a href='?src=\ref[src];switchtab=[TAB_INVESTMENTS]'>\[ОБНОВИТЬ\]</a><BR>"
+			contents += "<center>Инвестиции<BR>"
+			contents += "------АКТИВНЫЕ------<BR>"
+			for(var/datum/investment/investment in SSinvestments.active_investments)
+				contents += "<div style='background-color: #1c1c1c; margin-top:4px'>"
+				contents += "<b>[investment.investment_name]</b><BR>"
+				contents += "Доход: [investment.regular_payment]m/минута<BR>"
+				contents += "</div>"
+
+			contents += "------ОЖИДАЮЩИЕ------<BR>"
+			for(var/datum/investment/investment in SSinvestments.awaiting_investments)
+				contents += "<div style='background-color: #1c1c1c; margin-top:4px'>"
+				contents += "<b>[investment.investment_name]</b><BR>"
+				var/remaining_ticks = (investment.time_purchased + investment.pay_eta) - world.time
+				var/total_seconds = round(remaining_ticks / (1 SECONDS))
+
+				var/min = round(total_seconds / 60)
+				var/sec = total_seconds % 60
+
+				contents += "Осталось времени: [max(min,0)] минут [max(sec,0) < 10 ? "0[sec]" : "[sec]"] секунд<BR>"
+				contents += "</div>"
+
+			contents += "------ДОСТУПНЫЕ------<BR>"
+			for(var/datum/investment/investment in SSinvestments.available_investments)
+				var/name
+				var/price
+				var/fail_chance
+				var/regular_payment
+				var/onetime_payment
+
+				if(HAS_TRAIT(user, TRAIT_SEEPRICES))
+					name = investment.investment_name
+					price = investment.price
+					fail_chance = investment.fail_chance
+					regular_payment = investment.regular_payment
+					onetime_payment = investment.onetime_payment
+				else if(HAS_TRAIT(user, TRAIT_SEEPRICES_SHITTY))
+					name = "???"
+					price = "примерно [investment.price * (rand(80, 120)/100)]"
+					fail_chance = "???"
+					regular_payment = "примерно [investment.regular_payment * (rand(80, 120)/100)]"
+					onetime_payment = "примерно [investment.onetime_payment * (rand(80, 120)/100)]"
+				else
+					name = "???"
+					price = "???"
+					fail_chance = "???"
+					regular_payment = "???"
+					onetime_payment = "???"
+
+				contents += "<div style='background-color: #1c1c1c; margin-top:4px'>"
+				contents += "<b>[name]</b><BR>"
+				if(investment.regular_payment != 0)
+					contents += "Доход: [regular_payment]m/минута<BR>"
+				if(investment.onetime_payment != 0)
+					contents += "Одноразовая выплата: [onetime_payment]m<BR>"
+				contents += "Цена: [price]m "
+				contents += "Шанс провала: [fail_chance]%<BR>"
+				contents += "ETA: [round(investment.pay_eta / (1 MINUTES))] минут<BR>"
+				if(SStreasury.treasury_value < investment.price)
+					contents += "<a href='?src=\ref[src];buy_investment=\ref[investment]'>\[НЕДОСТАТОЧНО СРЕДСТВ\]</a>"
+				else 
+					contents += "<a href='?src=\ref[src];buy_investment=\ref[investment]'>\[КУПИТЬ\]</a>"
+				contents += "</div>"
+			
+
 	if(!canread)
 		contents = stars(contents)
 	var/datum/browser/popup = new(user, "VENDORTHING", "", 700, 800)
@@ -557,3 +674,4 @@
 #undef TAB_LOG
 #undef TAB_STATISTICS
 #undef TAB_PAYDAY
+#undef TAB_INVESTMENTS

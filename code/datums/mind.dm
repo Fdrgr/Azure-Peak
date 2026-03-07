@@ -52,14 +52,15 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 
 	var/spell_points
 	var/used_spell_points
+	var/list/spell_point_pools
+	var/list/spell_points_used_by_pool
 	var/movemovemovetext = "Move!!"
 	var/takeaimtext = "Take aim!!"
 	var/holdtext = "Hold!!"
-	var/onfeettext = "On your feet!!"
 	var/retreattext = "Fall back!!"
+	var/chargetext = "Charge!!"
 	var/bolstertext = "Hold the line!!"
-	var/brotherhoodtext = "Stand proud, for the Brotherhood!!"
-	var/chargetext = "Chaaaaaarge!!"
+	var/onfeettext = "On your feet!!"
 
 	var/mob/living/carbon/champion = null
 	var/mob/living/carbon/ward = null
@@ -102,7 +103,7 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 	var/list/areas_entered = list()
 
 	/// Contains person, their job, and their voice color.
-	var/list/known_people = list() 
+	var/list/known_people = list()
 
 	/// RTD add notes button.
 	var/list/notes = list()
@@ -120,7 +121,7 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 	var/picking = FALSE
 
 	/// The bitflag our job applied.
-	var/job_bitflag = NONE	
+	var/job_bitflag = NONE
 
 	/// List of personal objectives not tied to the antag roles.
 	var/list/personal_objectives = list()
@@ -140,6 +141,11 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 
 /datum/mind/Destroy()
 	SSticker.minds -= src
+	soulOwner = null
+	if(current)
+		current.mind = null
+		current = null
+	enslaved_to = null
 	QDEL_NULL(sleep_adv)
 	if(islist(antag_datums))
 		QDEL_LIST(antag_datums)
@@ -359,16 +365,25 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 	spell_points += points
 	if(!has_spell(/obj/effect/proc_holder/spell/targeted/touch/prestidigitation))
 		AddSpell(new /obj/effect/proc_holder/spell/targeted/touch/prestidigitation)
-	check_learnspell() //check if we need to add or remove the learning spell
+	check_learnspell()
+
+/datum/mind/proc/set_spell_point_pools(list/pools)
+	spell_point_pools = pools.Copy()
+	spell_points_used_by_pool = list()
+	for(var/pool_name in pools)
+		spell_points_used_by_pool[pool_name] = 0
+	if(!has_spell(/obj/effect/proc_holder/spell/targeted/touch/prestidigitation))
+		AddSpell(new /obj/effect/proc_holder/spell/targeted/touch/prestidigitation)
+	check_learnspell()
 
 /datum/mind/proc/set_death_time()
 	last_death = world.time
 
 /datum/mind/proc/store_memory(new_text)
-	var/newlength = length(memory) + length(new_text)
-	if (newlength > MAX_MESSAGE_LEN * 100)
-		memory = copytext(memory, -newlength-MAX_MESSAGE_LEN * 100)
 	memory += "[new_text]<BR>"
+	var/limit = MAX_MESSAGE_LEN * 100
+	if (length_char(memory) > limit)
+		memory = copytext_char(memory, -limit)
 
 /datum/mind/proc/wipe_memory()
 	memory = null
@@ -461,7 +476,8 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 /datum/mind/proc/show_memory(mob/recipient, window=1)
 	if(!recipient)
 		recipient = current
-	var/output = "<B>[current.real_name]'s Memories:</B><br>"
+	var/output = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'></head><body>"
+	output += "<B>[current.real_name]'s Memories:</B><br>"
 	output += memory
 
 	if(personal_objectives.len)
@@ -485,6 +501,7 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 			antag_obj_count++
 
 	if(window)
+		output += "</body></html>"
 		recipient << browse(output,"window=memory")
 	else if(all_objectives.len || memory || personal_objectives.len)
 		to_chat(recipient, "<i>[output]</i>")
@@ -493,7 +510,7 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 /datum/mind/proc/recall_targets(mob/recipient, window=1)
 	var/output = "<B>[recipient.real_name]'s Hitlist:</B><br>"
 	for(var/mob/living/carbon in GLOB.mob_living_list) // Iterate through all mobs in the world
-		if((carbon.real_name != recipient.real_name) && ((carbon.has_flaw(/datum/charflaw/hunted)) && (!istype(carbon, /mob/living/carbon/human/dummy))))//To be on the list they must be hunted, not be the user and not be a dummy (There is a dummy that has all vices for some reason)
+		if((carbon.real_name != recipient.real_name) && ((carbon.has_flaw(/datum/charflaw/hunted)) || HAS_TRAIT(carbon, TRAIT_ZIZOID_HUNTED) && (!istype(carbon, /mob/living/carbon/human/dummy))))//To be on the list they must be hunted, not be the user and not be a dummy (There is a dummy that has all vices for some reason)
 			output += "<br>[carbon.real_name]"
 			output += "<br>[carbon.real_name]"
 			if (carbon.job)
@@ -752,19 +769,42 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 /datum/mind/proc/AddSpell(obj/effect/proc_holder/spell/S, mob/living/user)
 	if(!S)
 		return
+	for(var/obj/effect/proc_holder/spell/present_spell in spell_list)
+		if(present_spell.name == S.name && present_spell.type == S.type)
+			return
 	spell_list += S
 	S.action.Grant(current)
 	if(user)
 		S.on_gain(user)
+	if(length(spell_list) == 1 && current)
+		addtimer(CALLBACK(src, PROC_REF(show_spell_tip)), 3 SECONDS)
+
+/datum/mind/proc/show_spell_tip()
+	if(current)
+		to_chat(current, span_nicegreen("Tip: You can Ctrl-Click your hotkey bar to unlock it, then drag to rearrange your spells. Re-arranging them change which hotkeys they are bound to in order from left to right (Alt 1 to Alt 9 default). You can shift click your spells to learn more about them."))
 
 /datum/mind/proc/check_learnspell()
-	if(!has_spell(/obj/effect/proc_holder/spell/self/learnspell)) //are we missing the learning spell?
-		if((spell_points - used_spell_points) > 0) //do we have points?
-			AddSpell(new /obj/effect/proc_holder/spell/self/learnspell(null)) //put it in
+	// Pool-based system always takes priority over flat spellpoints to prevent unexpected spell point sources from bypassing pool restrictions
+	if(LAZYLEN(spell_point_pools))
+		var/has_remaining = FALSE
+		for(var/pool_name in spell_point_pools)
+			var/used = spell_points_used_by_pool?[pool_name] || 0
+			if(used < spell_point_pools[pool_name])
+				has_remaining = TRUE
+				break
+		if(has_remaining && !has_spell(/obj/effect/proc_holder/spell/self/library))
+			AddSpell(new /obj/effect/proc_holder/spell/self/library(null))
+		else if(!has_remaining)
+			RemoveSpell(/obj/effect/proc_holder/spell/self/library)
+		return
+
+	if(!has_spell(/obj/effect/proc_holder/spell/self/learnspell))
+		if((spell_points - used_spell_points) > 0)
+			AddSpell(new /obj/effect/proc_holder/spell/self/library(null))
 			return
 
-	if((spell_points - used_spell_points) <= 0) //are we out of points?
-		RemoveSpell(/obj/effect/proc_holder/spell/self/learnspell) //bye bye spell
+	if((spell_points - used_spell_points) <= 0)
+		RemoveSpell(/obj/effect/proc_holder/spell/self/library)
 		return
 	return
 
@@ -895,6 +935,7 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 	if(!mind.name)
 		mind.name = real_name
 	mind.current = src
+	AddComponent(/datum/component/area_ambience)
 
 /mob/living/carbon/mind_initialize()
 	..()
@@ -922,8 +963,8 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 	mind.assigned_role = ROLE_PAI
 	mind.special_role = ""
 
-/datum/mind/proc/add_sleep_experience(skill, amt, silent = FALSE)
-	sleep_adv.add_sleep_experience(skill, amt, silent)
+/datum/mind/proc/add_sleep_experience(skill, amt, silent = FALSE, show_xp = TRUE)
+	sleep_adv.add_sleep_experience(skill, amt, silent, show_xp)
 
 /datum/mind/proc/add_personal_objective(datum/objective/O)
 	if(!istype(O))
@@ -941,7 +982,7 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 		qdel(O)
 	personal_objectives.Cut()
 
-/proc/handle_special_items_retrieval(mob/user, atom/host_object)
+/* /proc/handle_special_items_retrieval(mob/user, atom/host_object)
 	// Attempts to retrieve an item from a player's stash, and applies any base colors, where preferable.
 	if(user.mind && isliving(user))
 		if(user.mind.special_items && user.mind.special_items.len)
@@ -956,4 +997,4 @@ GLOBAL_LIST_EMPTY(personal_objective_minds)
 						if (istype(I, /obj/item/clothing)) // commit any pref dyes to our item if it is clothing and we have them available
 							var/dye = user.client?.prefs.resolve_loadout_to_color(path2item)
 							if (dye)
-								I.add_atom_colour(dye, FIXED_COLOUR_PRIORITY)
+								I.add_atom_colour(dye, FIXED_COLOUR_PRIORITY) */

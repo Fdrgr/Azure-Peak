@@ -1,16 +1,51 @@
+// T0: Snuffs out fires/lights around area of the caster, greater range with higher HOLY skill
+/obj/effect/proc_holder/spell/self/zizo_snuff
+	name = "Snuff Lights"
+	desc = "Extinguish all lights in range, with your Miracles skill increasing range."
+	action_icon = 'icons/mob/actions/zizomiracles.dmi'
+	overlay_icon = 'icons/mob/actions/zizomiracles.dmi'
+	overlay_state = "snufflight"
+	releasedrain = 10
+	chargedrain = 0
+	chargetime = 0
+	chargedloop = /datum/looping_sound/invokeholy
+	invocations = list("exhales a dark grey smog, choking any lights nearby.")
+	invocation_type = "emote"
+	sound = 'sound/magic/zizo_snuff.ogg'
+	associated_skill = /datum/skill/magic/holy
+	antimagic_allowed = FALSE
+	recharge_time = 20 SECONDS
+	miracle = TRUE
+	devotion_cost = 30
+	range = 2
+
+/obj/effect/proc_holder/spell/self/zizo_snuff/cast(list/targets, mob/user = usr)
+	. = ..()
+	if(!ishuman(user))
+		revert_cast()
+		return FALSE
+	var/checkrange = (range + user.get_skill_level(/datum/skill/magic/holy)) //+1 range per holy skill up to a potential of 8.
+	for(var/obj/O in range(checkrange, user))
+		O.extinguish()
+	for(var/mob/M in range(checkrange, user))
+		for(var/obj/O in M.contents)
+			O.extinguish()
+	return TRUE
+
 // T1: (fires a bone splinter at a target for brute and bleeding if you're not holding bones in your other hand, fires a significantly stronger bone lance if you are)
 
 /obj/effect/proc_holder/spell/invoked/projectile/profane
 	name = "Profane"
 	desc = "Fire forth a splinter of unholy bone, tearing flesh and causing bleeding. If you hold pieces of bone in your other hand, you will coax a much stronger lance of bone into being."
 	clothes_req = FALSE
+	action_icon = 'icons/mob/actions/zizomiracles.dmi'
+	overlay_icon = 'icons/mob/actions/zizomiracles.dmi'
 	overlay_state = "profane"
 	range = 8
 	associated_skill = /datum/skill/magic/arcane
 	projectile_type = /obj/projectile/magic/profane
 	chargedloop = /datum/looping_sound/invokeholy
-	invocations = list("Oblino!")
-	invocation_type = "whisper"
+	invocation_type = "none"
 	releasedrain = 30
 	chargedrain = 0
 	chargetime = 15
@@ -48,9 +83,9 @@
 	P.fire()
 
 	if (big_cast)
-		user.visible_message(span_danger("[user] conjures and hurls a vicious lance of bone towards [target]!"), span_notice("I hurl forth a vicious lance of profaned bone at [target]!"))
+		user.visible_message(span_danger("[user] conjures and hurls a vicious lance of bone towards [target]!"), span_notice("I hurl a vicious lance of bone at [target]!")) 						//hehe. vicious lance of bone
 	else
-		user.visible_message(span_danger("[user] directs forth a splinter of bone towards [target]!"), span_notice("I fling forth a shard of profaned bone at [target]!"))
+		user.visible_message(span_danger("[user] swings their arm in a wide arc, hurling a splinter of bone towards [target]!"), span_notice("I fling a shard of profaned bone at [target]!"))
 
 	projectile_type = initial(projectile_type)
 
@@ -91,20 +126,32 @@
 // T2: just use lesser animate undead for now
 
 /obj/effect/proc_holder/spell/invoked/raise_undead_formation/miracle
+	action_icon = 'icons/mob/actions/zizomiracles.dmi'
+	overlay_icon = 'icons/mob/actions/zizomiracles.dmi'
+	overlay_state = "skeleton_formation"
 	miracle = TRUE
 	devotion_cost = 75
 	cabal_affine = TRUE
-	to_spawn = 2
+	to_spawn = 1
 
 // T2: carbon spawn
 
 /obj/effect/proc_holder/spell/invoked/raise_undead_guard/miracle
+	action_icon = 'icons/mob/actions/zizomiracles.dmi'
+	overlay_icon = 'icons/mob/actions/zizomiracles.dmi'
+	overlay_state = "skeleton"
+	name = "Raise Deadite"
+	desc = "Raises a singular, weak deadite."
+	chargetime = 3 SECONDS
 	miracle = TRUE
 	devotion_cost = 75
 
 // T3: tames bio_type = undead mobs
 
 /obj/effect/proc_holder/spell/invoked/tame_undead/miracle
+	action_icon = 'icons/mob/actions/zizomiracles.dmi'
+	overlay_icon = 'icons/mob/actions/zizomiracles.dmi'
+	overlay_state = "deadite_tame"
 	miracle = TRUE
 	devotion_cost = 100
 
@@ -112,8 +159,10 @@
 
 /obj/effect/proc_holder/spell/invoked/rituos
 	name = "Rituos"
-	desc = "Do a ritual for she of Z that skeletonises a part of your body and bestows upon you arcyne magycks until you next sleep. Once your whole body has become skeletonised you gain full access to the Arcyne, bolstering your knowledge of spells with each additional ritual."
+	desc = "Do a zizoid ritual that skeletonises a part of your body, granting you one spell until your next rest. Once your whole body has become skeletonised, you gain full access to the Arcyne, bolstering your knowledge of spells with each additional ritual."
 	clothes_req = FALSE
+	action_icon = 'icons/mob/actions/zizomiracles.dmi'
+	overlay_icon = 'icons/mob/actions/zizomiracles.dmi'
 	overlay_state = "rituos"
 	associated_skill = /datum/skill/magic/arcane
 	chargedloop = /datum/looping_sound/invokeholy
@@ -124,6 +173,12 @@
 	movement_interrupt = TRUE
 	recharge_time = 2 MINUTES
 	var/list/excluded_bodyparts = list(/obj/item/bodypart/head)
+	var/list/to_skeletonize = list(
+		/obj/item/bodypart/l_arm::name = BODY_ZONE_L_ARM, 
+		/obj/item/bodypart/r_arm::name = BODY_ZONE_R_ARM,
+		/obj/item/bodypart/l_leg::name = BODY_ZONE_L_LEG,
+		/obj/item/bodypart/r_leg::name = BODY_ZONE_R_LEG,
+		)
 	hide_charge_effect = TRUE
 
 /obj/effect/proc_holder/spell/invoked/rituos/miracle
@@ -131,59 +186,25 @@
 	devotion_cost = 120
 	associated_skill = /datum/skill/magic/holy
 
-/obj/effect/proc_holder/spell/invoked/rituos/proc/check_ritual_progress(mob/living/carbon/user)
-	var/rituos_complete = TRUE
-	for (var/obj/item/bodypart/our_limb in user.bodyparts)
-		if (our_limb.type in excluded_bodyparts)
-			continue
-		if (!our_limb.skeletonized)
-			rituos_complete = FALSE
-
-	return rituos_complete
-
-/obj/effect/proc_holder/spell/invoked/rituos/proc/get_skeletonized_bodyparts(mob/living/carbon/user)
-	var/skeletonized_parts = list()
-	for (var/obj/item/bodypart/our_limb in user.bodyparts)
-		if (our_limb.type in excluded_bodyparts)
-			continue
-		if (our_limb.skeletonized)
-			skeletonized_parts += our_limb.type
-
-	return skeletonized_parts
-
 /obj/effect/proc_holder/spell/invoked/rituos/cast(list/targets, mob/living/carbon/user)
-	//check to see if we're all skeletonized first
-	var/pre_rituos = check_ritual_progress(user)
-	if (pre_rituos)
-		to_chat(user, span_notice("I have completed Her Lesser Work. Only lichdom awaits me now, but just out of reach..."))
-		return FALSE
+	if(!LAZYLEN(to_skeletonize) && tgui_alert(user, "Restore skeleton bodyparts?", "FINISHED RITUOS", list("Nae", "Yae")) == "Yae")
+		skeletonize_bodyparts(user)
+		return TRUE
 
-	if (user.mind?.has_rituos)
+	if(user.mind?.has_rituos)
 		to_chat(user, span_warning("I have not the mental fortitude to enact the Lesser Work again. I must rest first..."))
 		return FALSE
 
-	//hoo boy. here we go.
-	var/list/possible_parts = user.bodyparts.Copy()
-	var/list/skeletonized_parts = get_skeletonized_bodyparts(user)
-
-	for(var/obj/item/bodypart/BP in possible_parts)
-		for(var/bodypart_type in excluded_bodyparts)
-			if(istype(BP, bodypart_type))
-				possible_parts -= BP
-				break
-		for(var/skeleton_part in skeletonized_parts)
-			if (istype(BP, skeleton_part))
-				possible_parts -= BP
-				break
-
-	var/obj/item/bodypart/the_part = pick(possible_parts)
-	var/obj/item/bodypart/part_to_bonify = user.get_bodypart(the_part.body_zone)
+	var/bodypart_choice = tgui_input_list(user, "Which bodypart will be sacrificed?", "SACRIFICE", to_skeletonize)
+	
+	if(!bodypart_choice)
+		return FALSE
 
 	var/list/choices = list()
 	var/list/spell_choices = GLOB.learnable_spells
 	for(var/i = 1, i <= spell_choices.len, i++)
 		var/obj/effect/proc_holder/spell/spell_item = spell_choices[i]
-		if(spell_item.spell_tier > 3) // Hardcap Rituos choice to T3 to avoid Court Mage spells access
+		if(spell_item.spell_tier > 3)
 			continue
 		choices["[spell_item.name]"] = spell_item
 
@@ -199,66 +220,55 @@
 		user.visible_message(span_warning("The pallor of the grave descends across [user]'s skin in a wave of arcyne energy..."), span_boldwarning("A deathly chill overtakes my body at my first culmination of the Lesser Work! I feel my heart slow down in my chest..."))
 		user.mob_biotypes |= MOB_UNDEAD
 		to_chat(user, span_smallred("I have forsaken the living. I am now closer to a deadite than a mortal... but I still yet draw breath and bleed."))
+	
+	var/obj/item/bodypart/part = user.get_bodypart(to_skeletonize[bodypart_choice])
 
-	part_to_bonify.skeletonize(FALSE)
-	user.update_body_parts()
-	user.visible_message(span_warning("Faint runes flare beneath [user]'s skin before [user.p_their()] flesh suddenly slides away from [user.p_their()] [part_to_bonify.name]!"), span_notice("I feel arcyne power surge throughout my frail mortal form, as the Rituos takes its terrible price from my [part_to_bonify.name]."))
+	if(part)
+		part.skeletonize(FALSE)
+		user.update_body_parts()
+		user.visible_message(span_warning("Faint runes flare beneath [user]'s skin before [user.p_their()] flesh suddenly slides away from [user.p_their()] [part.name]!"), span_notice("I feel arcyne power surge throughout my frail mortal form, as the Rituos takes its terrible price from my [part.name]."))
 
-	if (user.mind?.rituos_spell)
+	if(user.mind?.rituos_spell)
 		to_chat(user, span_warning("My knowledge of [user.mind.rituos_spell.name] flees..."))
 		user.mind.RemoveSpell(user.mind.rituos_spell)
 		user.mind.rituos_spell = null
 
 	user.mind.has_rituos = TRUE
+	to_skeletonize -= bodypart_choice
 
-	var/post_rituos = check_ritual_progress(user)
-	if (post_rituos)
-		//everything but our head is skeletonized now, so grant them journeyman rank and 3 extra spellpoints to grief people with
-		user.adjust_skillrank(/datum/skill/magic/arcane, 3, TRUE)
-		user.grant_language(/datum/language/undead)
-		user.mind?.AddSpell(new /obj/effect/proc_holder/spell/targeted/touch/prestidigitation)
-		user.mind?.adjust_spellpoints(18)
-		user.visible_message(span_boldwarning("[user]'s form swells with terrible power as they cast away almost all of the remnants of their mortal flesh, arcyne runes glowing upon their exposed bones..."), span_notice("I HAVE DONE IT! I HAVE COMPLETED HER LESSER WORK! I stand at the cusp of unspeakable power, but something is yet missing..."))
-		ADD_TRAIT(user, TRAIT_NOHUNGER, "[type]")
-		ADD_TRAIT(user, TRAIT_NOBREATH, "[type]")
-		ADD_TRAIT(user, TRAIT_ARCYNE_T3, "[type]")
-		if (prob(33))
-			to_chat(user, span_small("...what have I done?"))
+	if(!LAZYLEN(to_skeletonize))
+		finalize(user)
 		return TRUE
-	else
-		to_chat(user, span_notice("The Lesser Work of Rituos floods my mind with stolen arcyne knowledge: I can now cast [item.name] until I next rest..."))
-		user.mind.rituos_spell = item
-		user.mind.AddSpell(new item)
-		return TRUE
+	
+	to_chat(user, span_notice("The Lesser Work of Rituos floods my mind with stolen arcyne knowledge: I can now cast [item.name] until I next rest..."))
+	user.mind.rituos_spell = item
+	user.mind.AddSpell(new item)
 
-
-/obj/effect/proc_holder/spell/self/zizo_snuff
-	name = "Snuff Lights"
-	desc = "Extinguish all lights in range, with your Miracles skill increasing range."
-	releasedrain = 10
-	chargedrain = 0
-	chargetime = 0
-	chargedloop = /datum/looping_sound/invokeholy
-	invocations = list("Embrace the darkness!")
-	invocation_type = "shout"
-	sound = 'sound/magic/zizo_snuff.ogg'
-	overlay_state = "rune2"
-	associated_skill = /datum/skill/magic/holy
-	antimagic_allowed = FALSE
-	recharge_time = 20 SECONDS
-	miracle = TRUE
-	devotion_cost = 30
-	range = 2
-
-/obj/effect/proc_holder/spell/self/zizo_snuff/cast(list/targets, mob/user = usr)
-	. = ..()
-	if(!ishuman(user))
-		revert_cast()
-		return FALSE
-	var/checkrange = (range + user.get_skill_level(/datum/skill/magic/holy)) //+1 range per holy skill up to a potential of 8.
-	for(var/obj/O in range(checkrange, user))
-		O.extinguish()
-	for(var/mob/M in range(checkrange, user))
-		for(var/obj/O in M.contents)
-			O.extinguish()
 	return TRUE
+
+/obj/effect/proc_holder/spell/invoked/rituos/proc/finalize(mob/living/carbon/human/user)
+	var/obj/item/bodypart/torso = user.get_bodypart(BODY_ZONE_CHEST)
+	torso?.skeletonize(FALSE)
+	user.update_body_parts()
+
+	user.adjust_skillrank(/datum/skill/magic/arcane, 3, TRUE)
+	user.grant_language(/datum/language/undead)
+	user.mind?.AddSpell(new /obj/effect/proc_holder/spell/targeted/touch/prestidigitation)
+	user.mind?.adjust_spellpoints(18)
+	user.visible_message(span_boldwarning("[user]'s form swells with terrible power as they cast away almost all of the remnants of their mortal flesh, arcyne runes glowing upon their exposed bones..."), span_notice("I HAVE DONE IT! I HAVE COMPLETED HER LESSER WORK! I stand at the cusp of unspeakable power, but something is yet missing..."))
+
+	ADD_TRAIT(user, TRAIT_NOHUNGER, "[type]")
+	ADD_TRAIT(user, TRAIT_NOBREATH, "[type]")
+	ADD_TRAIT(user, TRAIT_ARCYNE_T3, "[type]")
+
+	if(prob(33))
+		to_chat(user, span_small("...what have I done?"))
+
+/obj/effect/proc_holder/spell/invoked/rituos/proc/skeletonize_bodyparts(mob/living/carbon/human/user)
+	for(var/obj/item/bodypart/part as anything in user.bodyparts)
+		if(is_type_in_list(part, excluded_bodyparts))
+			continue
+
+		part.skeletonize(FALSE)
+
+	user.update_body_parts()

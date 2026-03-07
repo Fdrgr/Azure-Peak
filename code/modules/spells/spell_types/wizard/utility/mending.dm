@@ -14,6 +14,7 @@
 	spell_tier = 1 // Utility. For repair
 	glow_color = GLOW_COLOR_ARCANE
 	glow_intensity = GLOW_INTENSITY_LOW
+	ignore_los = TRUE // temp. cus it breaks if it doesnt have this maybe
 
 	miracle = FALSE
 
@@ -56,7 +57,7 @@
 
 	I.obj_integrity = min(I.obj_integrity + repair_percent, I.max_integrity)
 	user.visible_message(span_info("[I] glows in a faint mending light."))
-	playsound(I, 'sound/foley/sewflesh.ogg', 50, TRUE, -2)
+	playsound(I, 'sound/magic/mending.ogg', 35, TRUE, -2)
 
 	if(I.obj_integrity >= I.max_integrity)
 		if(I.obj_broken)
@@ -69,6 +70,9 @@
 				I.repair_coverage()
 				to_chat(user, span_info("[I]'s shorn layers mend together, completely."))
 
+	deactivate(user)
+
+	return TRUE
 
 /obj/effect/proc_holder/spell/invoked/mending/lesser
 	name = "Lesser Mending"

@@ -258,7 +258,10 @@ SUBSYSTEM_DEF(migrants)
 
 	SSticker.minds += character.mind
 	GLOB.joined_player_list += character.ckey
+	update_bandits_slots()
 	update_wretch_slots()
+	update_mercenary_slots()
+	update_adventurer_slots()
 	if(character.client)
 		character.client.update_ooc_verb_visibility()
 
@@ -288,6 +291,8 @@ SUBSYSTEM_DEF(migrants)
 	to_chat(character, span_alertsyndie("I am a [role.name]!"))
 	to_chat(character, span_notice(wave.greet_text))
 	to_chat(character, span_notice(role.greet_text))
+
+	ADD_TRAIT(character, TRAIT_OUTLANDER, TRAIT_GENERIC) //TA EDIT
 
 	if(role.outfit)
 		var/datum/outfit/outfit = new role.outfit()
@@ -473,7 +478,7 @@ SUBSYSTEM_DEF(migrants)
 	var/triumph_bonus = wave.triumph_total
 
 	// Triumph provides a linear bonus to weight (configurable multiplier)
-	var/triumph_multiplier = 2 // Each triumph point adds 2x weight
+	var/triumph_multiplier = 6 // Each triumph point adds 6x weight
 	var/final_weight = base_weight + (triumph_bonus * triumph_multiplier)
 
 	return max(final_weight, 1) // Ensure minimum weight of 1

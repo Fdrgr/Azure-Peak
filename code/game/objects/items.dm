@@ -148,7 +148,8 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 	var/altgripped = FALSE
 	var/mordhau = FALSE //This weapon can mordhau, therefore we treat it as wielded in alt-grip.
 	var/list/alt_intents //these replace main intents
-	var/list/gripped_intents //intents while gripped, replacing main intents
+	///intents while gripped, replacing main intents. if list != null, will allow the weapon to be wielded. set to null to remove wielding.
+	var/list/gripped_intents 
 	var/force_wielded = 0
 	var/gripsprite = FALSE //use alternate grip sprite for inhand
 	var/wieldsound = FALSE
@@ -156,6 +157,8 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 	var/dropshrink = 0
 	/// Force value that is force or force_wielded, with any added bonuses from external sources. (Mainly components for enchantments)
 	var/force_dynamic = 0
+	/// Temporary multiplier applied to sharpness decay for cleave secondary hits. Reset to 1 after use.
+	var/tmp/cleave_sharpness_mult = 1
 	/// Weapon's length. Indicates what limbs it can target without extra circumstances (like grabs / on a prone target).
 	var/wlength = WLENGTH_NORMAL
 	/// Weapon's balance. Swift uses SPD difference between attacker and defender to increase hit%. Heavy increases parry stamina drain based on STR diff.
@@ -253,6 +256,24 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 
 	/// Makes this item impossible to enchant, for temporary item
 	var/unenchantable = FALSE
+
+	/// A lazylist to store inhands data.
+	var/list/onprop
+	var/d_type = "blunt"
+	var/force_reupdate_inhand = TRUE
+	/// Sanity for smelteries to avoid runtimes, if this is a bar smelted through ore for exp gain
+	var/smelted = FALSE
+	/// Determines whether this item is silver or not.
+	var/is_silver = FALSE
+	var/last_used = 0
+	var/toggle_state = null
+	var/icon_x_offset = 0
+	var/icon_y_offset = 0
+	var/always_destroy = FALSE
+	/// If TRUE, this item is not allowed to be minted. May be useful for other things later.
+	var/is_important = FALSE
+	/// does this item/weapon circumvent two-stage death during dismemberment? (do not add this to anything but ultra rare shit)
+	var/vorpal = FALSE
 
 /obj/item/Initialize()
 	. = ..()
@@ -482,7 +503,7 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 	Both multiplication are applied to the base number, and does not multiply each other. Reduced sharpness decrease the contribution of strength\n\
 	Force, combined with armor penetration on an intent determines whether an attack penetrate the target's armor. Armor penetrating attack deals less damage to the armor itself."
 	if(href_list["showforce"])
-		var/output = span_info("Actual Force: ([force]). [additional_explanation]")
+		var/output = span_info("Actual Force: ([force_dynamic]). [additional_explanation]")
 		if(!usr.client.prefs.no_examine_blocks)
 			output = examine_block(output)
 		to_chat(usr, output)
@@ -496,7 +517,8 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 	if(href_list["explainsharpness"])
 		var/output = span_info("Bladed weapons have sharpness. At [SHARPNESS_TIER1_THRESHOLD * 100]%, damage factor and strength damage starts to fall off gradually. \n\
 		At [SHARPNESS_TIER1_FLOOR * 100]%, strength and damage factor no longer applies. Below [SHARPNESS_TIER2_THRESHOLD * 100]%, the base damage value also starts to decline\n\
-		Sharpness declines by [SHARPNESS_ONHIT_DECAY] on parry for bladed weapon.")
+		Sharpness declines by [SHARPNESS_ONHIT_DECAY] on parry for bladed weapon.\n\
+		A grindstone can restore max sharpness, whereas other sources will degrade 0.5 max integrity per sharpening.")
 		if(!usr.client.prefs.no_examine_blocks)
 			output = examine_block(output)
 		to_chat(usr, output)
@@ -510,13 +532,19 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 		to_chat(usr, output)
 
 	if(href_list["explainintdamage"])
-		var/output = span_info("Multiplies the damage done to armor on hit.")
+		var/output = span_info("Multiplies the damage done to armor on hit.\nAlso multiplies durability damage dealt to shields on parry (if higher than Anti-Object Mod).")
+		if(!usr.client.prefs.no_examine_blocks)
+			output = examine_block(output)
+		to_chat(usr, output)
+
+	if(href_list["explainshieldcoverage"])
+		var/output = span_info("Chance to passively block incoming projectiles. Only works from the front.\nShields take quarter damage from blocked projectiles and fixed durability damage from melee parries.\nHeavy weapons deal more durability damage to shields — the higher of the attacker's Anti-Object Mod or Integrity Damage is used as a multiplier.")
 		if(!usr.client.prefs.no_examine_blocks)
 			output = examine_block(output)
 		to_chat(usr, output)
 
 	if(href_list["explaindemolitionmod"])
-		var/output = span_info("Multiplies the damage done to objects when hitting them.")
+		var/output = span_info("Multiplies the damage done to objects when hitting them.\nAlso multiplies durability damage dealt to shields on parry (if higher than Integrity Damage).")
 		if(!usr.client.prefs.no_examine_blocks)
 			output = examine_block(output)
 		to_chat(usr, output)
@@ -538,7 +566,7 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 			inspec += "\n<b>NO HALVING ON WIELD</b>"
 
 		if(force)
-			inspec += "\n<b>FORCE:</b> [get_force_string(force)] <span class='info'><a href='?src=[REF(src)];showforce=1'>{?}</a></span>"
+			inspec += "\n<b>FORCE:</b> [get_force_string(force_dynamic)] <span class='info'><a href='?src=[REF(src)];showforce=1'>{?}</a></span>"
 		if(gripped_intents && !wielded)
 			if(force_wielded)
 				inspec += "\n<b>WIELDED FORCE:</b> [get_force_string(force_wielded)] <span class='info'><a href='?src=[REF(src)];showforcewield=1'>{?}</a></span>"
@@ -591,11 +619,23 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 			if(W.special)
 				inspec += "[W.special.get_examine()]"
 
+		if(istype(src, /obj/item/rogueweapon/shield))
+			var/obj/item/rogueweapon/shield/S = src
+			inspec += "\n<b>PASSIVE PROJECTILE BLOCK:</b> [S.coverage]% <span class='info'><a href='?src=[REF(src)];explainshieldcoverage=1'>{?}</a></span>"
+
 		if(intdamage_factor != 1 && force >= 5)
 			inspec += "\n<b>INTEGRITY DAMAGE:</b> [intdamage_factor * 100]% <span class='info'><a href='?src=[REF(src)];explainintdamage=1'>{?}</a></span>"
 
-		if(demolition_mod != 1 && force >= 5)
-			inspec += "\n<b>ANTI-OBJECT MOD:</b> [demolition_mod * 100]% <span class='info'><a href='?src=[REF(src)];explaindemolitionmod=1'>{?}</a></span>"
+		if(istype(src, /obj/item/ammo_casing/caseless/rogue))
+			var/obj/item/ammo_casing/caseless/rogue/rog_ammo = src
+			if(rog_ammo.BB.min_range)
+				inspec += "\n<b>MINIMUM EFFECTIVE RANGE:</b> [rog_ammo.BB.min_range] tile(s)"
+			if(rog_ammo.BB.max_range)
+				inspec += "\n<b>MAXIMUM EFFECTIVE RANGE:</b> [rog_ammo.BB.max_range] tile(s)"
+			if(rog_ammo.BB.dam_falloff_factor)
+				inspec += "\n<b>DAMAGE FALLOFF:</b> [get_falloff_string(rog_ammo.BB.dam_falloff_factor)]"
+			if(rog_ammo.BB.ap_falloff_factor)
+				inspec += "\n<b>PENETRATION FALLOFF:</b> [get_falloff_string(rog_ammo.BB.ap_falloff_factor)]"
 
 //**** CLOTHING STUFF
 
@@ -1298,6 +1338,19 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 		else
 			return "Mighty"
 
+/obj/item/proc/get_falloff_string(var/falloff)
+	switch(falloff)
+		if(0 to 0.25)
+			return "Major"
+		if(0.26 to 0.5)
+			return "Moderate"
+		if(0.51 to 0.75)
+			return "Noticeable"
+		if(0.76 to 0.9)
+			return "Marginal"
+		else
+			return "None"
+
 /obj/item/MouseEntered(location, control, params)
 	. = ..()
 
@@ -1687,15 +1740,15 @@ GLOBAL_VAR_INIT(rpg_loot_items, FALSE)
 			return .
 	if(isnull(anvilrepair) && isnull(sewrepair))
 		return .
-	else
-		var/str = "This object can be repaired using "
-		if(anvilrepair)
-			var/datum/skill/S = anvilrepair		//Should only ever be a skill or null
-			str += "<b>[initial(S.name)]</b> and a hammer."
-		if(sewrepair)
-			str += "<b>Sewing</b> and a needle."
-		str = span_info(str)
-		. += str
+
+	var/str = "This object can be repaired using "
+	if(anvilrepair)
+		var/datum/skill/S = anvilrepair		//Should only ever be a skill or null
+		str += "<b>[initial(S.name)]</b> and a hammer."
+	if(sewrepair)
+		str += "<b>Sewing</b> and a needle."
+	str = span_info(str)
+	. += str
 
 /obj/item/proc/update_force_dynamic()
 	force_dynamic = (wielded ? force_wielded : force)

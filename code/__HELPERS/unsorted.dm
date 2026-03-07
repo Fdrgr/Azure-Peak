@@ -229,7 +229,7 @@ Turf and target are separate in case you want to teleport some distance from a t
 
 
 //Returns a list of all items of interest with their name
-/proc/getpois(mobs_only=0,skip_mindless=0,team=null)
+/proc/getpois(mobs_only=FALSE,skip_mindless=FALSE,team=null,skip_antighost=TRUE)
 	var/list/mobs = sortmobs()
 	var/list/namecounts = list()
 	var/list/pois = list()
@@ -237,6 +237,8 @@ Turf and target are separate in case you want to teleport some distance from a t
 		if(skip_mindless && (!M.mind || !M.ckey))
 			continue
 		if(M.client && M.client.holder && M.client.holder.fakekey) //stealthmins
+			continue
+		if(skip_mindless && skip_antighost && (M.client?.prefs.ghost_toggles & TOGGLE_ANTIGHOST))
 			continue
 		var/name = avoid_assoc_duplicate_keys(M.real_name, namecounts)
 
@@ -1136,29 +1138,6 @@ GLOBAL_REAL_VAR(list/stack_trace_storage)
 	. = stack_trace_storage
 	stack_trace_storage = null
 
-//Key thing that stops lag. Cornerstone of performance in ss13, Just sitting here, in unsorted.dm.
-
-//Increases delay as the server gets more overloaded,
-//as sleeps aren't cheap and sleeping only to wake up and sleep again is wasteful
-#define DELTA_CALC max(((max(TICK_USAGE, world.cpu) / 100) * max(Master.sleep_delta-1,1)), 1)
-
-//returns the number of ticks slept
-/proc/stoplag(initial_delay)
-	if (!Master || !(Master.current_runlevel & RUNLEVELS_DEFAULT))
-		sleep(world.tick_lag)
-		return 1
-	if (!initial_delay)
-		initial_delay = world.tick_lag
-	. = 0
-	var/i = DS2TICKS(initial_delay)
-	do
-		. += CEILING(i*DELTA_CALC, 1)
-		sleep(i*world.tick_lag*DELTA_CALC)
-		i *= 2
-	while (TICK_USAGE > min(TICK_LIMIT_TO_RUN, Master.current_ticklimit))
-
-#undef DELTA_CALC
-
 /proc/flash_color(mob_or_client, flash_color="#960000", flash_time=20)
 	var/client/C
 	if(ismob(mob_or_client))
@@ -1195,29 +1174,40 @@ GLOBAL_REAL_VAR(list/stack_trace_storage)
 	pixel_x = initialpixelx
 	pixel_y = initialpixely
 
+/// Checks whether a given icon state exists in a given icon file. If `file` and `state` both exist,
+/// this will return `TRUE` - otherwise, it will return `FALSE`.
+///
+/// If you want a stack trace to be output when the given state/file doesn't exist, use
+/// `/proc/icon_exists_or_scream()`.
+/proc/icon_exists(file, state)
+	if(isnull(file) || isnull(state))
+		return FALSE //This is common enough that it shouldn't panic, imo.
 
-///Checks if the given iconstate exists in the given file, caching the result. Setting scream to TRUE will print a stack trace ONCE.
-/proc/icon_exists(file, state, scream)
-	var/static/list/icon_states_cache = list()
-	if(icon_states_cache[file]?[state])
+	if(isnull(GLOB.icon_states_cache_lookup[file]))
+		compile_icon_states_cache(file)
+	return !isnull(GLOB.icon_states_cache_lookup[file][state])
+
+/// Functions the same as `/proc/icon_exists()`, but with the addition of a stack trace if the
+/// specified file or state doesn't exist.
+///
+/// Stack traces will only be output once for each file.
+/proc/icon_exists_or_scream(file, state)
+	if(icon_exists(file, state))
 		return TRUE
 
-	if(icon_states_cache[file]?[state] == FALSE)
-		return FALSE
+	var/static/list/screams = list()
+	if(!isnull(screams[file]))
+		screams[file] = TRUE
+		stack_trace("State [state] in file [file] does not exist.")
 
-	var/list/states = icon_states(file)
+	return FALSE
 
-	if(!icon_states_cache[file])
-		icon_states_cache[file] = list()
-
-	if(state in states)
-		icon_states_cache[file][state] = TRUE
-		return TRUE
-	else
-		icon_states_cache[file][state] = FALSE
-		if(scream)
-			stack_trace("Icon Lookup for state: [state] in file [file] failed.")
-		return FALSE
+/proc/compile_icon_states_cache(file)
+	GLOB.icon_states_cache[file] = list()
+	GLOB.icon_states_cache_lookup[file] = list()
+	for(var/istate in icon_states(file))
+		GLOB.icon_states_cache[file] += istate
+		GLOB.icon_states_cache_lookup[file][istate] = TRUE
 
 /proc/weightclass2text(w_class)
 	switch(w_class)
@@ -1576,7 +1566,8 @@ GLOBAL_LIST_INIT(duplicate_forbidden_vars,list(
 	/area/rogue/outdoors/woods, \
 	/area/rogue/outdoors/bog, \
 	/area/rogue/outdoors/mountains, \
-	/area/rogue/outdoors/rtfield \
+	/area/rogue/outdoors/rtfield, \
+	/area/rogue/outdoors/bograt \
 )
 
 /proc/is_valid_hunting_area(area/A)
@@ -1599,14 +1590,17 @@ GLOBAL_LIST_INIT(duplicate_forbidden_vars,list(
 /proc/get_sorted_actors_list()
 	var/list/sorted_ckey_to_actor_data = list()
 	var/list/categories = list(
-		"Nobles" = GLOB.noble_positions,
+		"Ducal Family" = GLOB.noble_positions,
 		"Courtiers" = GLOB.courtier_positions,
+		"Retinue" = GLOB.retinue_positions,
 		"Garrison" = GLOB.garrison_positions,
+		"City Watch" = GLOB.citywatch_positions,
+		"Vanguard" = GLOB.vanguard_positions,
 		"Church" = GLOB.church_positions,
-		"Inquisition" = GLOB.inquisition_positions,
-		"Yeoman" = GLOB.yeoman_positions,
+		"Burgher" = GLOB.burgher_positions,
 		"Peasant" = GLOB.peasant_positions,
-		"Youngfolk" = GLOB.youngfolk_positions,
+		"Sidefolk" = GLOB.sidefolk_positions,
+		"Inquisition" = GLOB.inquisition_positions,
 		"Wanderer" = GLOB.wanderer_positions,
 	)
 

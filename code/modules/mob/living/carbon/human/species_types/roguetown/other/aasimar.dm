@@ -4,6 +4,9 @@
 /datum/species/aasimar
 	name = "Aasimar"
 	id = "aasimar"
+	origin_default = /datum/virtue/origin/otava
+	origin = "Otava"
+	base_name = "Godtouched"
 	desc = "<b>Aasimar</b><br>\
 	Aasimar are born of a rare union between Humens and Angels. \
 	They bear the mark of their celestial touch through their many varying physical features. \
@@ -11,11 +14,10 @@
 	Most commonly, Aasimar are similar to Humens, albeit taller, and commonly possess an uncanny beauty. \
 	When compared to the average Humen, they have strangely colored skin and are more physically frail. \
 	Because of their upbringing, they make for natural conduits for godly powers. \
-	Azure Peak's populace holds them with a mixture of uneasy mixture of fear and respect. \
+	Twilight Axis's populace holds them with a mixture of uneasy mixture of fear and respect. \
 	Due to their celestial nature, it is widely believed that an Aasimar's death is a bad omen...<br>\
-	(+1 Stat of their choice, or Lack of Hunger & Thirst)"
+	(+1 FOR, +1 Stat of their choice, or Lack of Hunger & Thirst)"
 
-	skin_tone_wording = "Craft"
 	max_age = "???"
 
 	species_traits = list(EYECOLOR,HAIR,FACEHAIR,LIPS,STUBBLE,OLDGREY)
@@ -44,7 +46,7 @@
 		OFFSET_NECK_F = list(0,-1), OFFSET_MOUTH_F = list(0,-1), OFFSET_PANTS_F = list(0,0), \
 		OFFSET_SHIRT_F = list(0,0), OFFSET_ARMOR_F = list(0,0), OFFSET_UNDIES_F = list(0,-1), \
 		)
-	race_bonus = list()
+	race_bonus = list(STAT_FORTUNE = 1)
 	enflamed_icon = "widefire"
 	customizers = list(
 		/datum/customizer/organ/eyes/humanoid,
@@ -54,11 +56,12 @@
 		/datum/customizer/bodypart_feature/face_detail,
 		/datum/customizer/bodypart_feature/underwear,
 		/datum/customizer/bodypart_feature/legwear,
+		/datum/customizer/bodypart_feature/piercing,
 		/datum/customizer/organ/testicles/anthro,
 		/datum/customizer/organ/penis/anthro,
 		/datum/customizer/organ/breasts/human,
 		/datum/customizer/organ/vagina/human_anthro,
-		/datum/customizer/organ/wings/anthro,
+		/datum/customizer/organ/wings/aasimar,
 		/datum/customizer/organ/ears/elf
 		)
 	body_marking_sets = list(
@@ -103,6 +106,7 @@
 
 /datum/species/aasimar/get_skin_list()
 	return list(
+		"Archon" = SKIN_COLOR_ARCHON,
 		"Cultor" = SKIN_COLOR_CULTOR,
 		"Spiritus" = SKIN_COLOR_SPIRITUS,
 		"Planetar" = SKIN_COLOR_PLANETAR,
