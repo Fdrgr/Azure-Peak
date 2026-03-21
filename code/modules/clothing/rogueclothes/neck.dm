@@ -304,6 +304,10 @@
 	equip_delay_self = 6 SECONDS
 	unequip_delay_self = 6 SECONDS
 
+/obj/item/clothing/neck/roguetown/gorget/ComponentInitialize()
+	AddComponent(/datum/component/armour_filtering/negative, TRAIT_FENCERDEXTERITY)
+	AddComponent(/datum/component/armour_filtering/negative, TRAIT_HONORBOUND)
+
 /obj/item/clothing/neck/roguetown/gorget/bronze
 	name = "bronze neckguard"
 	desc = "An interlinked veil of bronze plates, shielding the throat from terrible wounds since the dawn of tyme. Piercing blows may sunder the plate, but - as long as the alloy persists - so shall you."
@@ -463,7 +467,7 @@
 	//dropshrink = 0.75
 	resistance_flags = FIRE_PROOF
 	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_HIP|ITEM_SLOT_WRISTS
-	possible_item_intents = list(/datum/intent/use, /datum/intent/special/magicarc)
+	possible_item_intents = list(/datum/intent/use)
 	sellprice = 10
 	experimental_onhip = TRUE
 	anvilrepair = /datum/skill/craft/armorsmithing
@@ -516,7 +520,7 @@
 	icon_state = "reformistcross"
 
 /obj/item/clothing/neck/roguetown/psicross/aalloy
-	name = "decrepit psicross"
+	name = "decrepit psycross"
 	desc = "'A comet capable of rending all the enemies of humanity apart; oh, how graceful His power was! And His sacrifice, ever so noble! Yet now He slumbers, unaware of the fruits His efforts came to give. And He sighs. And He weeps.'"
 	icon_state = "psycross_a"
 	color = "#bb9696"
@@ -957,7 +961,7 @@
 	desc = "A cabbit's foot necklace. Some say it brings good luck. It only feels more lucky when it's worn around the neck."
 	icon_state = "luckcharm"
 	sellprice = 15
-	possible_item_intents = list(/datum/intent/use, /datum/intent/special/magicarc)
+	possible_item_intents = list(/datum/intent/use)
 	slot_flags = ITEM_SLOT_NECK|ITEM_SLOT_HIP|ITEM_SLOT_WRISTS
 	grid_width = 32
 	grid_height = 32
