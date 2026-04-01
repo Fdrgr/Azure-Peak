@@ -41,7 +41,7 @@
 /area/rogue/indoors/town/manor
 	name = "Manor"
 	icon_state = "manor"
-	droning_sound = list('sound/music/area/manor.ogg', 'sound/music/area/manor2.ogg')
+	droning_sound = list('sound/music/area/manorgarri.ogg')
 	droning_sound_dusk = null
 	droning_sound_night = null
 	converted_type = /area/rogue/outdoors/exposed/manorgarri
