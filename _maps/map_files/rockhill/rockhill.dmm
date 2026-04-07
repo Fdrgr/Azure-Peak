@@ -1084,6 +1084,47 @@
 	},
 /turf/open/floor/rogue/grass,
 /area/rogue/outdoors/town/rockhill)
+"alK" = (
+/obj/item/rotation_contraption/waterwheel,
+/obj/item/rotation_contraption/waterwheel,
+/obj/item/rotation_contraption/waterwheel,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/structure/closet/crate/chest/crate,
+/obj/item/rotation_contraption/waterwheel,
+/obj/item/rotation_contraption/waterwheel,
+/obj/item/rotation_contraption/waterwheel,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/obj/item/rotation_contraption/shaft,
+/turf/open/floor/rogue/greenstone,
+/area/rogue/under/town/sewer)
 "alL" = (
 /obj/structure/fluff/statue/small{
 	pass_flags = 1;
@@ -1121,22 +1162,14 @@
 /turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town)
 "amd" = (
-/obj/effect/decal/cleanable/blood/old,
-/obj/machinery/light/roguestreet/walllamp{
-	dir = 8;
-	pixel_y = 5
+/obj/structure/table/wood{
+	icon_state = "tablewood1"
 	},
-/obj/structure/fluff/walldeco/church/line{
-	dir = 4;
-	pixel_x = 2
+/obj/item/candle/candlestick/gold/lit{
+	pixel_x = 1;
+	pixel_y = 6
 	},
-/obj/structure/bed/rogue/inn{
-	name = "operating table";
-	icon = 'icons/obj/surgery.dmi';
-	icon_state = "optable";
-	desc = "A table used for performing surgery on. Not the most comfortable."
-	},
-/turf/open/floor/rogue/concrete,
+/turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town/physician)
 "amf" = (
 /turf/open/floor/rogue/blocks/platform,
@@ -2168,18 +2201,6 @@
 /obj/structure/chair/stool/rogue,
 /turf/open/floor/rogue/ruinedwood,
 /area/rogue/indoors/town)
-"axD" = (
-/obj/structure/fluff/walldeco/church/line{
-	dir = 1;
-	layer = 2
-	},
-/obj/structure/table/wood,
-/obj/item/candle/candlestick/gold/lit{
-	pixel_x = 1;
-	pixel_y = 15
-	},
-/turf/open/floor/rogue/church,
-/area/rogue/indoors/town/physician)
 "axJ" = (
 /turf/closed/wall/mineral/rogue/pipe,
 /area/rogue/indoors/town/magician/tower)
@@ -2643,6 +2664,7 @@
 	pixel_y = 0;
 	pixel_x = -32
 	},
+/obj/item/roguekey/apothecary,
 /turf/open/floor/rogue/woodturned,
 /area/rogue/indoors/town/physician)
 "aCW" = (
@@ -4022,10 +4044,10 @@
 	pixel_y = 44
 	},
 /obj/effect/decal/cobbleedge,
-/obj/structure/closet/crate/chest/old_crate,
-/obj/item/reagent_containers/glass/bucket/pot,
 /obj/item/rogueweapon/huntingknife/chefknife,
 /obj/item/flint,
+/obj/structure/closet/crate/chest/old_crate,
+/obj/item/reagent_containers/glass/bucket/pot,
 /turf/open/floor/rogue/ruinedwood/spiral,
 /area/rogue/indoors/town/physician)
 "aRV" = (
@@ -5509,10 +5531,10 @@
 /turf/open/floor/rogue/naturalstone,
 /area/rogue/under/cavewet)
 "biv" = (
+/obj/structure/fluff/walldeco/church/line,
 /obj/structure/chair/frankenstein{
 	plane = -3
 	},
-/obj/structure/fluff/walldeco/church/line,
 /turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town/physician)
 "biB" = (
@@ -8190,11 +8212,11 @@
 /turf/open/floor/rogue/blocks,
 /area/rogue/indoors/town/warden)
 "bOg" = (
-/obj/structure/bed/rogue/inn/double,
 /obj/structure/fluff/walldeco/med3{
 	pixel_y = 32
 	},
 /obj/machinery/light/rogue/candle/r,
+/obj/structure/bed/rogue/inn/double,
 /turf/open/floor/carpet/red,
 /area/rogue/indoors/town/physician)
 "bOm" = (
@@ -8590,7 +8612,6 @@
 	dir = 1;
 	layer = 2
 	},
-/obj/structure/chair/stool/rogue,
 /turf/open/floor/rogue/church,
 /area/rogue/indoors/town/physician)
 "bSu" = (
@@ -11492,6 +11513,10 @@
 /obj/effect/spawner/lootdrop/roguetown/dungeon/medical,
 /turf/open/floor/rogue/ruinedwood/spiral,
 /area/rogue/under/cavewet)
+"cxt" = (
+/obj/structure/fluff/walldeco/church/line,
+/turf/closed/basic,
+/area/rogue/indoors/town/church/chapel)
 "cxv" = (
 /obj/structure/fluff/railing/wood{
 	dir = 1;
@@ -12437,8 +12462,7 @@
 "cGZ" = (
 /obj/structure/table/wood{
 	dir = 8;
-	icon_state = "largetable";
-	pixel_x = -5
+	icon_state = "largetable"
 	},
 /obj/item/kitchen/rollingpin{
 	pixel_x = 8;
@@ -12697,19 +12721,6 @@
 /obj/structure/flora/ausbushes/ppflowers,
 /turf/open/floor/rogue/grass,
 /area/rogue/outdoors/town/rockhill)
-"cJB" = (
-/obj/item/roguegear{
-	pixel_x = -2;
-	pixel_y = 3
-	},
-/obj/item/roguegear{
-	pixel_x = -5;
-	pixel_y = 13
-	},
-/obj/structure/rack/rogue/shelf/biggest,
-/obj/item/rogueweapon/huntingknife/scissors/steel,
-/turf/open/floor/rogue/herringbone,
-/area/rogue/indoors/town/physician)
 "cJF" = (
 /obj/effect/decal/cobbleedge{
 	dir = 10;
@@ -16893,6 +16904,10 @@
 	pixel_y = 8
 	},
 /obj/item/herbseed/manabloom,
+/obj/item/flint{
+	pixel_x = 6;
+	pixel_y = 4
+	},
 /turf/open/floor/rogue/church,
 /area/rogue/indoors/town/physician)
 "dFi" = (
@@ -17772,15 +17787,18 @@
 /turf/open/floor/rogue/cobble/mossy,
 /area/rogue/outdoors/rtfield/rockhill)
 "dPr" = (
-/obj/structure/table/wood{
-	icon_state = "tablewood1"
+/obj/effect/decal/cleanable/blood/old,
+/obj/machinery/light/roguestreet/walllamp{
+	dir = 8;
+	pixel_y = 5
 	},
-/obj/item/reagent_containers/glass/cup/wooden,
-/obj/item/candle/candlestick/gold/lit{
-	pixel_x = 1;
-	pixel_y = 6
+/obj/structure/bed/rogue/inn{
+	name = "operating table";
+	icon = 'icons/obj/surgery.dmi';
+	icon_state = "optable";
+	desc = "A table used for performing surgery on. Not the most comfortable."
 	},
-/turf/open/floor/rogue/herringbone,
+/turf/open/floor/rogue/concrete,
 /area/rogue/indoors/town/physician)
 "dPt" = (
 /obj/machinery/light/rogue/candle,
@@ -18323,14 +18341,6 @@
 /obj/machinery/light/rogue/candle/l,
 /turf/open/transparent/openspace,
 /area/rogue/indoors/inq/office/shipoffice)
-"dUZ" = (
-/obj/structure/fluff/walldeco/church/line{
-	dir = 1;
-	layer = 2
-	},
-/obj/effect/landmark/start/apothecary,
-/turf/open/floor/rogue/church,
-/area/rogue/indoors/town/physician)
 "dVa" = (
 /obj/structure/bookcase/random,
 /turf/open/floor/rogue/woodturned,
@@ -18419,9 +18429,8 @@
 /area/rogue/rockharbor)
 "dVM" = (
 /obj/structure/table/wood{
-	dir = 8;
-	icon_state = "largetable";
-	pixel_x = -5
+	dir = 4;
+	icon_state = "largetable"
 	},
 /obj/item/kitchen/rollingpin{
 	pixel_x = -14;
@@ -18829,6 +18838,184 @@
 /obj/structure/chair/stool/rogue,
 /turf/open/floor/rogue/wood/nosmooth,
 /area/rogue/under/cavewet)
+"eaa" = (
+/obj/item/rotation_contraption/minecart_rail/railbreak,
+/obj/item/rotation_contraption/minecart_rail/railbreak,
+/obj/item/rotation_contraption/minecart_rail/railbreak,
+/obj/item/rotation_contraption/minecart_rail/railbreak,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/item/rotation_contraption/minecart_rail,
+/obj/structure/closet/crate/chest/crate,
+/turf/open/floor/rogue/greenstone,
+/area/rogue/under/town/sewer)
 "ead" = (
 /obj/structure/fluff/railing/border{
 	dir = 5
@@ -21931,9 +22118,9 @@
 /turf/open/floor/rogue/hexstone,
 /area/rogue/under/underdark/south)
 "eIN" = (
-/obj/structure/fermentation_keg/water,
 /obj/machinery/light/rogue/candle/r,
-/turf/open/floor/rogue/herringbone,
+/obj/structure/fermentation_keg/water,
+/turf/open/floor/rogue/concrete,
 /area/rogue/indoors/town/physician)
 "eIS" = (
 /obj/structure/fluff/railing/border{
@@ -24080,7 +24267,17 @@
 /obj/structure/fluff/walldeco/church/line{
 	layer = 2
 	},
-/obj/machinery/light/rogue/cauldron,
+/obj/structure/table/wood,
+/obj/structure/fermentation_keg/random/water{
+	icon_state = "barrel_tapped_ready";
+	pixel_x = -9;
+	pixel_y = 5
+	},
+/obj/structure/fermentation_keg/random/water{
+	icon_state = "barrel_tapped_ready";
+	pixel_x = 8;
+	pixel_y = 5
+	},
 /turf/open/floor/rogue/church,
 /area/rogue/indoors/town/physician)
 "fjc" = (
@@ -26389,20 +26586,18 @@
 /turf/open/floor/rogue/grass,
 /area/rogue/under/underdark)
 "fKY" = (
-/obj/item/rogueweapon/mace/woodclub,
-/obj/item/reagent_containers/glass/bottle/frankenbrew{
-	pixel_x = 4;
-	pixel_y = 4
+/obj/structure/table/vtable/v2{
+	name = "Стол для вскрытия"
 	},
-/obj/item/reagent_containers/glass/bottle/frankenbrew{
-	pixel_x = -3;
-	pixel_y = 9
+/obj/item/storage/belt/rogue/surgery_bag/full{
+	pixel_y = 10
 	},
-/obj/item/heart_blood_canister/filled,
-/obj/item/heart_blood_canister/filled,
-/obj/item/heart_blood_canister/filled,
-/obj/structure/rack/rogue/shelf/biggest,
-/turf/open/floor/rogue/herringbone,
+/obj/structure/fluff/walldeco/church/line{
+	dir = 1;
+	layer = 2
+	},
+/obj/item/reagent_containers/glass/cup/wooden,
+/turf/open/floor/rogue/concrete,
 /area/rogue/indoors/town/physician)
 "fLa" = (
 /turf/closed/wall/mineral/rogue/decostone/end{
@@ -26889,8 +27084,7 @@
 "fPK" = (
 /obj/structure/table/wood{
 	dir = 8;
-	icon_state = "largetable";
-	pixel_x = -5
+	icon_state = "largetable"
 	},
 /obj/item/millstone{
 	pixel_y = 0
@@ -30983,12 +31177,6 @@
 /obj/machinery/light/rogue/candle/l,
 /turf/open/floor/rogue/grass,
 /area/rogue/indoors/town/manor/rockhill)
-"gKx" = (
-/obj/effect/decal/cleanable/blood/tracks{
-	dir = 9
-	},
-/turf/open/floor/rogue/concrete,
-/area/rogue/indoors/town/physician)
 "gKH" = (
 /obj/structure/fluff/railing/border{
 	dir = 5
@@ -31077,13 +31265,25 @@
 /turf/open/floor/rogue/church,
 /area/rogue/indoors/town/Academy)
 "gLo" = (
+/obj/structure/rack/rogue/shelf/biggest,
+/obj/item/reagent_containers/glass/bucket{
+	pixel_x = 0;
+	pixel_y = 20
+	},
+/obj/item/soap{
+	pixel_x = -4;
+	pixel_y = -5
+	},
+/obj/item/soap{
+	pixel_x = 4;
+	pixel_y = -5
+	},
 /obj/structure/fluff/walldeco/church/line{
 	layer = 2
 	},
 /obj/structure/fluff/walldeco/church/line{
-	dir = 8
+	dir = 4
 	},
-/obj/machinery/light/rogue/cauldron,
 /obj/machinery/light/rogue/candle{
 	pixel_y = -32
 	},
@@ -38446,39 +38646,29 @@
 	},
 /area/rogue/under/cavewet/river)
 "iwK" = (
-/obj/structure/rack/rogue/shelf/biggest,
-/obj/item/reagent_containers/glass/bottle/rogue/healthpot{
-	pixel_x = 4;
-	pixel_y = 0
+/obj/structure/fluff/alch,
+/obj/item/natural/bundle/stick,
+/obj/structure/rack/rogue/shelf{
+	pixel_y = 25
 	},
-/obj/item/reagent_containers/glass/bottle/rogue/healthpot{
-	pixel_x = 7;
-	pixel_y = -3
+/obj/item/reagent_containers/glass/bottle/alchemical{
+	pixel_x = 8;
+	pixel_y = 36
 	},
-/obj/item/reagent_containers/glass/bottle/rogue/healthpot{
-	pixel_x = 0;
-	pixel_y = -3
+/obj/item/reagent_containers/glass/bottle/alchemical{
+	pixel_x = 2;
+	pixel_y = 36
 	},
-/obj/item/reagent_containers/glass/bottle/rogue/healthpot{
-	pixel_x = -7;
-	pixel_y = -3
+/obj/item/reagent_containers/glass/bottle/alchemical{
+	pixel_x = -4;
+	pixel_y = 36
 	},
-/obj/item/reagent_containers/glass/bottle/rogue/manapot,
-/obj/item/reagent_containers/glass/bottle/rogue/manapot,
-/obj/item/reagent_containers/glass/bottle/rogue/manapot,
-/obj/item/reagent_containers/glass/bottle/rogue/manapot,
-/obj/structure/fluff/walldeco/church/line{
-	dir = 1;
-	layer = 2
+/obj/item/reagent_containers/glass/bottle/alchemical{
+	pixel_x = -10;
+	pixel_y = 36
 	},
-/obj/structure/fluff/walldeco/church/line{
-	dir = 4;
-	pixel_x = 2
-	},
-/obj/structure/fluff/railing/border{
-	dir = 4
-	},
-/turf/open/floor/rogue/church,
+/obj/structure/fluff/railing/border/east,
+/turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town/physician)
 "iwN" = (
 /obj/structure/flora/roguegrass,
@@ -41216,9 +41406,9 @@
 /area/rogue/under/cave/inhumen)
 "jcc" = (
 /obj/effect/decal/cleanable/blood/tracks{
-	dir = 4
+	dir = 9
 	},
-/turf/open/floor/rogue/concrete,
+/turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town/physician)
 "jcd" = (
 /obj/effect/spawner/lootdrop/roguetown/dungeon/spells,
@@ -46836,6 +47026,7 @@
 /obj/item/rogueweapon/huntingknife/idagger/steel,
 /obj/item/flashlight/flare/torch/lantern,
 /obj/item/clothing/suit/roguetown/shirt/robe/physician,
+/obj/item/roguekey/apothecary,
 /turf/open/floor/rogue/woodturned,
 /area/rogue/indoors/town/physician)
 "koO" = (
@@ -48728,10 +48919,6 @@
 	},
 /turf/open/floor/rogue/woodturned,
 /area/rogue/indoors/town)
-"kKL" = (
-/obj/effect/landmark/start/apothecary,
-/turf/open/floor/rogue/concrete,
-/area/rogue/indoors/town/physician)
 "kKP" = (
 /obj/structure/table/wood{
 	icon_state = "map5"
@@ -53236,8 +53423,6 @@
 /turf/open/floor/rogue/dirt/road,
 /area/rogue/indoors)
 "lNZ" = (
-/obj/item/roguebin/water,
-/obj/item/natural/cloth,
 /obj/structure/lever/wall{
 	pixel_x = 16;
 	pixel_y = 2;
@@ -53414,30 +53599,6 @@
 	},
 /turf/open/floor/rogue/grasscold,
 /area/rogue/outdoors/rtfield/abandonedhotsprings)
-"lQy" = (
-/obj/structure/rack/rogue/shelf{
-	pixel_y = 25
-	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
-	pixel_x = -10;
-	pixel_y = 36
-	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
-	pixel_x = -4;
-	pixel_y = 36
-	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
-	pixel_x = 2;
-	pixel_y = 36
-	},
-/obj/item/reagent_containers/glass/bottle/alchemical{
-	pixel_x = 8;
-	pixel_y = 36
-	},
-/obj/structure/fluff/alch,
-/obj/item/natural/bundle/stick,
-/turf/open/floor/rogue/herringbone,
-/area/rogue/indoors/town/physician)
 "lQG" = (
 /turf/open/floor/rogue/cobble,
 /area/rogue/outdoors/bograt/sunken)
@@ -54916,15 +55077,6 @@
 	dir = 1
 	},
 /turf/open/floor/rogue/ruinedwood/spiral,
-/area/rogue/indoors/town/physician)
-"mgF" = (
-/obj/structure/table/vtable/v2{
-	name = "Стол для вскрытия"
-	},
-/obj/item/storage/belt/rogue/surgery_bag/full{
-	pixel_y = 10
-	},
-/turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town/physician)
 "mgJ" = (
 /turf/closed/mineral/rogue/salt,
@@ -58082,6 +58234,10 @@
 /obj/item/bedsheet/rogue/wool,
 /turf/open/floor/rogue/ruinedwood,
 /area/rogue/rockharbor)
+"mTq" = (
+/obj/structure/roguemachine/chimeric_slab,
+/turf/open/floor/rogue/woodturned,
+/area/rogue/indoors/town/church)
 "mTu" = (
 /obj/effect/decal/cobbleedge{
 	dir = 10
@@ -60622,6 +60778,8 @@
 /area/rogue/indoors/town/shop)
 "nys" = (
 /obj/machinery/light/rogue/candle,
+/obj/structure/chair/stool/rogue,
+/obj/effect/landmark/start/apothecary,
 /turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town/physician)
 "nyw" = (
@@ -63836,6 +63994,20 @@
 	},
 /turf/open/floor/rogue/dirt,
 /area/rogue/outdoors/woodsrat/north)
+"ojK" = (
+/obj/structure/table/vtable{
+	name = "Стол для вскрытия"
+	},
+/obj/item/bedroll,
+/obj/structure/fluff/walldeco/church/line{
+	dir = 8
+	},
+/obj/structure/fluff/walldeco/church/line{
+	dir = 1;
+	layer = 2
+	},
+/turf/open/floor/rogue/concrete,
+/area/rogue/indoors/town/physician)
 "ojN" = (
 /obj/machinery/light/rogue/candle,
 /obj/machinery/gear_painter,
@@ -67033,6 +67205,14 @@
 /obj/structure/flora/roguegrass/water/reeds,
 /turf/open/floor/rogue/dirt,
 /area/rogue/under/cavewet/river)
+"oTv" = (
+/obj/item/rotation_contraption/horizontal,
+/obj/item/rotation_contraption/horizontal,
+/obj/item/rotation_contraption/vertical,
+/obj/item/rotation_contraption/vertical,
+/obj/structure/closet/crate/chest/crate,
+/turf/open/floor/rogue/greenstone,
+/area/rogue/under/town/sewer)
 "oTB" = (
 /obj/structure/flora/roguegrass,
 /turf/open/floor/rogue/grass,
@@ -68750,19 +68930,6 @@
 /turf/open/transparent/openspace,
 /area/rogue/indoors/town)
 "poR" = (
-/obj/structure/rack/rogue/shelf/biggest,
-/obj/item/reagent_containers/glass/bucket{
-	pixel_x = 0;
-	pixel_y = 20
-	},
-/obj/item/soap{
-	pixel_x = -4;
-	pixel_y = -5
-	},
-/obj/item/soap{
-	pixel_x = 4;
-	pixel_y = -5
-	},
 /obj/structure/fluff/walldeco/church/line{
 	layer = 2
 	},
@@ -68770,6 +68937,7 @@
 	dir = 4
 	},
 /obj/machinery/light/rogue/candle/r,
+/obj/machinery/tanningrack,
 /turf/open/floor/rogue/church,
 /area/rogue/indoors/town/physician)
 "poS" = (
@@ -70344,6 +70512,9 @@
 /obj/effect/spawner/lootdrop/roguetown/sewers,
 /turf/open/floor/rogue/cobble,
 /area/rogue/under/cave)
+"pGU" = (
+/turf/open/floor/rogue/church,
+/area/rogue/indoors/shelter/mountains)
 "pGX" = (
 /obj/structure/winch{
 	name = "Exit Winch";
@@ -73079,17 +73250,16 @@
 /area/rogue/under/underdark/south)
 "qmB" = (
 /obj/structure/table/wood{
-	dir = 8;
-	icon_state = "largetable";
-	pixel_x = -5
+	dir = 10;
+	icon_state = "largetable"
 	},
 /obj/item/rogueweapon/huntingknife/chefknife/cleaver{
 	pixel_y = -2;
 	pixel_x = 8
 	},
 /obj/item/reagent_containers/peppermill{
-	pixel_x = -6;
-	pixel_y = -8
+	pixel_x = -1;
+	pixel_y = -4
 	},
 /turf/open/floor/rogue/tile/checker,
 /area/rogue/indoors/town/manor/rockhill)
@@ -73744,7 +73914,25 @@
 /turf/open/floor/rogue/dirt/road,
 /area/rogue/outdoors/woodsrat/north)
 "qti" = (
+/obj/item/rotation_contraption/cog,
+/obj/item/rotation_contraption/cog,
+/obj/item/rotation_contraption/cog,
+/obj/item/rotation_contraption/cog,
+/obj/item/rotation_contraption/cog,
+/obj/item/rotation_contraption/cog,
+/obj/item/rotation_contraption/cog,
+/obj/item/rotation_contraption/cog,
+/obj/item/rotation_contraption/large_cog,
+/obj/item/rotation_contraption/large_cog,
+/obj/item/rotation_contraption/large_cog,
+/obj/item/rotation_contraption/large_cog,
+/obj/item/rotation_contraption/large_cog,
+/obj/item/rotation_contraption/large_cog,
 /obj/structure/closet/crate/chest/crate,
+/obj/item/rotation_contraption/cog,
+/obj/item/rotation_contraption/cog,
+/obj/item/rotation_contraption/cog,
+/obj/item/rotation_contraption/cog,
 /turf/open/floor/rogue/greenstone,
 /area/rogue/under/town/sewer)
 "qtm" = (
@@ -77247,9 +77435,6 @@
 	},
 /turf/open/floor/carpet/stellar,
 /area/rogue/indoors/town/magician/tower)
-"rlN" = (
-/turf/open/floor/rogue/concrete,
-/area/rogue/indoors/town/physician)
 "rlO" = (
 /obj/effect/decal/cobbleedge{
 	icon_state = "borderfall";
@@ -77645,13 +77830,6 @@
 	},
 /turf/open/floor/rogue/cobble,
 /area/rogue/indoors/town/garrison)
-"rqm" = (
-/obj/structure/fluff/walldeco/church/line{
-	dir = 4
-	},
-/obj/machinery/tanningrack,
-/turf/open/floor/rogue/church,
-/area/rogue/indoors/town/physician)
 "rqt" = (
 /turf/open/floor/rogue/dirt,
 /area/rogue/under/cavewet)
@@ -79045,9 +79223,8 @@
 /area/rogue/indoors/town/warden)
 "rHz" = (
 /obj/structure/table/wood{
-	dir = 8;
-	icon_state = "largetable";
-	pixel_x = -5
+	dir = 4;
+	icon_state = "largetable"
 	},
 /obj/item/millstone{
 	pixel_y = 0
@@ -84247,7 +84424,10 @@
 /area/rogue/indoors/town/Academy)
 "sQS" = (
 /obj/effect/decal/cleanable/blood/splatter,
-/turf/open/floor/rogue/concrete,
+/obj/effect/decal/cleanable/blood/tracks{
+	dir = 10
+	},
+/turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town/physician)
 "sRk" = (
 /obj/effect/decal/cobbleedge{
@@ -91065,17 +91245,16 @@
 /area/rogue/indoors/town/manor/rockhill)
 "uwP" = (
 /obj/structure/table/wood{
-	dir = 8;
-	icon_state = "largetable";
-	pixel_x = -5
+	dir = 6;
+	icon_state = "largetable"
 	},
 /obj/item/rogueweapon/huntingknife/chefknife/cleaver{
 	pixel_x = -9;
 	pixel_y = -2
 	},
 /obj/item/reagent_containers/peppermill{
-	pixel_x = 9;
-	pixel_y = -8
+	pixel_x = 7;
+	pixel_y = -3
 	},
 /turf/open/floor/rogue/tile/checker,
 /area/rogue/indoors/town/manor/rockhill)
@@ -94934,20 +95113,16 @@
 /turf/open/floor/rogue/naturalstone,
 /area/rogue/indoors/town/fire_chamber/helly)
 "vru" = (
-/obj/structure/table/wood/poor,
-/obj/structure/fermentation_keg/random/water{
-	icon_state = "barrel_tapped_ready";
-	pixel_x = -9;
-	pixel_y = 12
+/obj/structure/rack/rogue/shelf{
+	pixel_y = 25
 	},
-/obj/item/flint{
-	pixel_x = 6;
-	pixel_y = 4
+/obj/item/natural/bundle/cloth/bandage/full{
+	pixel_x = 2;
+	pixel_y = 29
 	},
-/obj/structure/fermentation_keg/random/water{
-	icon_state = "barrel_tapped_ready";
-	pixel_x = 8;
-	pixel_y = 12
+/obj/item/reagent_containers/glass/bottle/rogue/manapot{
+	pixel_y = 37;
+	pixel_x = -8
 	},
 /turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town/physician)
@@ -95463,13 +95638,6 @@
 "vwM" = (
 /turf/open/floor/rogue/ruinedwood/spiral,
 /area/rogue/outdoors/town/roofs/rockhillroofs)
-"vwO" = (
-/obj/structure/table/vtable{
-	name = "Стол для вскрытия"
-	},
-/obj/item/bedroll,
-/turf/open/floor/rogue/herringbone,
-/area/rogue/indoors/town/physician)
 "vwP" = (
 /obj/effect/decal/cleanable/blood{
 	icon_state = "floor5-old"
@@ -95858,6 +96026,15 @@
 	},
 /turf/open/floor/rogue/tile/harem1,
 /area/rogue/indoors/town/bath)
+"vAv" = (
+/obj/structure/fluff/walldeco/church/line{
+	dir = 8
+	},
+/obj/effect/decal/cleanable/blood/tracks{
+	dir = 4
+	},
+/turf/open/floor/rogue/concrete,
+/area/rogue/indoors/town/physician)
 "vAB" = (
 /obj/structure/fluff/railing/border{
 	dir = 10
@@ -102110,6 +102287,15 @@
 /obj/item/restraints/legcuffs/beartrap/armed/camouflage,
 /turf/open/floor/rogue/cobblerock,
 /area/rogue/under/town/sewer)
+"wXw" = (
+/obj/structure/mineral_door/wood/donjon{
+	dir = 1;
+	locked = 1;
+	lockid = "apothecary";
+	name = "Revivificatorium"
+	},
+/turf/open/floor/rogue/herringbone,
+/area/rogue/indoors/town/physician)
 "wXx" = (
 /obj/effect/decal/cobbleedge{
 	dir = 10;
@@ -103400,8 +103586,7 @@
 	dir = 5
 	},
 /obj/structure/fluff/walldeco/church/line{
-	dir = 4;
-	pixel_x = 2
+	dir = 4
 	},
 /turf/open/floor/rogue/herringbone,
 /area/rogue/indoors/town/physician)
@@ -105679,12 +105864,16 @@
 /turf/open/floor/rogue/dirt,
 /area/rogue/under/town/sewer)
 "xPg" = (
-/obj/item/reagent_containers/lux,
+/obj/structure/fluff/walldeco/church/line{
+	dir = 8
+	},
 /obj/structure/closet/crate/chest{
 	locked = 1;
-	lockid = "apothecary"
+	lockid = "apothecary";
+	pixel_x = 4
 	},
-/turf/open/floor/rogue/herringbone,
+/obj/item/reagent_containers/lux,
+/turf/open/floor/rogue/concrete,
 /area/rogue/indoors/town/physician)
 "xPi" = (
 /obj/structure/fluff/railing/border{
@@ -106056,6 +106245,34 @@
 	},
 /turf/open/floor/rogue/greenstone,
 /area/rogue/indoors/town/magician/tower)
+"xTG" = (
+/obj/structure/rack/rogue/shelf/biggest,
+/obj/item/reagent_containers/glass/bottle/rogue/healthpot{
+	pixel_x = 4;
+	pixel_y = 0
+	},
+/obj/item/reagent_containers/glass/bottle/rogue/healthpot{
+	pixel_x = 7;
+	pixel_y = -3
+	},
+/obj/item/reagent_containers/glass/bottle/rogue/healthpot{
+	pixel_x = 0;
+	pixel_y = -3
+	},
+/obj/item/reagent_containers/glass/bottle/rogue/healthpot{
+	pixel_x = -7;
+	pixel_y = -3
+	},
+/obj/item/reagent_containers/glass/bottle/rogue/manapot,
+/obj/item/reagent_containers/glass/bottle/rogue/manapot,
+/obj/item/reagent_containers/glass/bottle/rogue/manapot,
+/obj/item/reagent_containers/glass/bottle/rogue/manapot,
+/obj/structure/fluff/walldeco/church/line{
+	dir = 1;
+	layer = 2
+	},
+/turf/open/floor/rogue/church,
+/area/rogue/indoors/town/physician)
 "xTJ" = (
 /obj/structure/roguewindow/openclose{
 	dir = 4
@@ -300178,7 +300395,7 @@ grP
 grP
 gLf
 gLf
-gLf
+alK
 aUc
 qbG
 qbG
@@ -301042,7 +301259,7 @@ grP
 grP
 gLf
 gLf
-gLf
+oTv
 aUc
 qbG
 qbG
@@ -301474,7 +301691,7 @@ grP
 grP
 gLf
 gLf
-qti
+gLf
 aUc
 qbG
 qbG
@@ -301906,7 +302123,7 @@ grP
 grP
 gLf
 gLf
-qti
+gLf
 aUc
 qbG
 qbG
@@ -302338,7 +302555,7 @@ grP
 grP
 gLf
 gLf
-gLf
+eaa
 aUc
 qbG
 qbG
@@ -413314,9 +413531,9 @@ rYf
 jAW
 bAT
 dpc
-rlN
-rlN
-rlN
+jpq
+jpq
+jpq
 gSQ
 bAT
 nys
@@ -413746,14 +413963,14 @@ oME
 oME
 bAT
 biv
-gKx
-amd
-rlN
-vwO
-bAT
-lQy
 jpq
-hwC
+amd
+jpq
+jpq
+wXw
+jpq
+jpq
+xTG
 rkp
 fja
 qFX
@@ -414179,13 +414396,13 @@ oME
 bAT
 hUN
 jcc
-kKL
+ejq
 sQS
-mgF
+jpq
 bAT
 vru
 jpq
-axD
+hwC
 rkp
 lxk
 bAT
@@ -414611,13 +414828,13 @@ gEP
 xwb
 bdH
 tBn
-jpq
-jpq
+ojK
+vAv
 xPg
 bAT
 iwK
 xnK
-dUZ
+hwC
 rkp
 dFh
 qFX
@@ -415042,7 +415259,7 @@ oME
 oME
 bAT
 lNZ
-cJB
+jpq
 fKY
 dPr
 eIN
@@ -415050,7 +415267,7 @@ bAT
 mPJ
 qBi
 iqd
-rqm
+iqd
 poR
 bAT
 jNz
@@ -526081,7 +526298,7 @@ fdq
 fZJ
 fZJ
 iMA
-upL
+mTq
 wyq
 wyq
 upL
@@ -529975,7 +530192,7 @@ dGr
 dGr
 dGr
 ntK
-ujc
+cxt
 swm
 nhW
 swm
@@ -548137,7 +548354,7 @@ aUc
 aUc
 aUc
 aUc
-aUc
+pGU
 aUc
 aUc
 aUc
